@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+WORDLIST="$PROJECT_ROOT/config/wordlist.txt"
+
+# --- Args ---
+PROJECT_DIR="${1:?Usage: claude-isolated-start <project-dir>}"
+PROJECT_DIR="$(cd "$PROJECT_DIR" && pwd)"  # resolve to absolute
+
+# --- Generate name ---
+ADJECTIVES=()
+NOUNS=()
+section="adj"
+while IFS= read -r line; do
+    [[ -z "$line" || "$line" =~ ^# ]] && { section="noun"; continue; }
+    if [[ "$section" == "adj" ]]; then
+        ADJECTIVES+=("$line")
+    else
+        NOUNS+=("$line")
+    fi
+done < "$WORDLIST"
+
+ADJ="${ADJECTIVES[$((RANDOM % ${#ADJECTIVES[@]}))]}"
+NOUN="${NOUNS[$((RANDOM % ${#NOUNS[@]}))]}"
+NAME="claude-isolated-${ADJ}-${NOUN}"
+
+# --- Host paths ---
+CLAUDE_JSON="$HOME/.claude.json"
+CLAUDE_DIR="$HOME/.claude"
+ISOLATED_DIR="$HOME/.claude-isolated"
+
+# --- Validate required files ---
+for f in "$CLAUDE_JSON" "$CLAUDE_DIR/settings.json" "$ISOLATED_DIR/ssh" "$ISOLATED_DIR/gitconfig"; do
+    if [[ ! -e "$f" ]]; then
+        echo "Missing: $f" >&2
+        exit 1
+    fi
+done
+
+# --- Start container ---
+podman run -d \
+    --name "$NAME" \
+    -e "CLAUDE_ISOLATED_NAME=$NAME" \
+    -v "$PROJECT_DIR:/workspace:rw" \
+    -v "$CLAUDE_JSON:/home/claude/.claude.json:ro" \
+    -v "$CLAUDE_DIR/settings.json:/home/claude/.claude/settings.json:ro" \
+    -v "$CLAUDE_DIR/plugins:/home/claude/.claude/plugins:ro" \
+    -v "$CLAUDE_DIR/CLAUDE.md:/home/claude/.claude/CLAUDE.md:ro" \
+    -v "$ISOLATED_DIR/ssh:/home/claude/.ssh:ro" \
+    -v "$ISOLATED_DIR/gitconfig:/home/claude/.gitconfig:ro" \
+    -it \
+    claude-isolated:latest
+
+echo "Started: $NAME"
+echo "Enter:   claude-isolated-enter $NAME"
