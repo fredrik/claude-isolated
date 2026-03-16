@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+NAME="${1:?Usage: claude-isolated-stop <name>}"
+
+podman stop "$NAME" 2>/dev/null && podman rm "$NAME" 2>/dev/null
+echo "Stopped and removed: $NAME"
