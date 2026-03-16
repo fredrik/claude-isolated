@@ -46,6 +46,3 @@ RUN curl -fsSL https://claude.ai/install.sh | bash
 # uv and claude on PATH
 ENV PATH="/home/claude/.local/bin:/home/claude/.claude/local/bin:$PATH"
 
-# Keep container alive; zellij is started on attach
-ENV CLAUDE_ISOLATED_NAME="unnamed"
-CMD ["sleep", "infinity"]
