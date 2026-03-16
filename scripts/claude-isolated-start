@@ -60,5 +60,7 @@ podman run -d \
     "${OPTIONAL_MOUNTS[@]}" \
     claude-isolated:latest
 
-echo "Started: $NAME"
-echo "Enter:   claude-isolated-enter $NAME"
+echo "Started: $NAME" >&2
+
+# --- Attach ---
+podman exec -it "$NAME" zellij attach --create "$NAME"
