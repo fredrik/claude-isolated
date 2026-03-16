@@ -67,6 +67,7 @@ podman cp <container-name>:/home/claude/.claude/.credentials.json \
 | `claude-isolated-start <project-dir>` | Start a new container |
 | `claude-isolated-enter <name>` | Attach to a running container |
 | `claude-isolated-stop <name>` | Stop and remove a container |
+| `claude-isolated-ls` | List running containers |
 
 ## Config location
 
