@@ -1,6 +1,6 @@
 # claude-isolated Implementation Plan
 
-> **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
+> **Status:** Done. All 10 tasks implemented. Implementation diverged from plan in several places (Debian over Alpine, `claude` user, `claude.ai` installer, configurable home dir, dispatcher script, `--dangerously-skip-permissions`, auto-remove containers, gh CLI). See git log for details.
 
 **Goal:** A set of scripts and a container image that run Claude Code inside a Podman container with full OS isolation, mounted project directory, and read-only auth/config.
 
