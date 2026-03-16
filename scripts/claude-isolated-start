@@ -48,7 +48,7 @@ if [[ -e "$INIT_HOME/.claude/credentials.json" ]]; then
 fi
 
 # --- Start container ---
-podman run -it \
+podman run -it --rm \
     --name "$NAME" \
     -e "CLAUDE_ISOLATED_NAME=$NAME" \
     -v "$PROJECT_DIR:/workspace:rw" \
