@@ -10,10 +10,16 @@ Each container gets its own workspace, while sharing an isolated set of Claude a
 
 ## Quick start
 
+Install:
+
+```
+ln -s "$(pwd)/scripts/claude-isolated" ~/.local/bin/claude-isolated
+```
+
 Build the image:
 
 ```
-./scripts/claude-isolated-build
+claude-isolated build
 ```
 
 Bootstrap your config:
@@ -37,13 +43,13 @@ Edit the files with your actual values:
 Start a container with a project directory mounted at `/workspace`:
 
 ```
-./scripts/claude-isolated-start ~/code/my-project
+claude-isolated start ~/code/my-project
 ```
 
 Attach to it:
 
 ```
-./scripts/claude-isolated-enter claude-isolated-bright-falcon
+claude-isolated enter claude-isolated-bright-falcon
 ```
 
 This opens a zellij session with Claude Code running.
@@ -59,15 +65,15 @@ podman cp <container-name>:/home/claude/.claude/.credentials.json \
   ~/.config/claude-isolated/home/.claude/credentials.json
 ```
 
-## Scripts
+## Commands
 
-| Script | Purpose |
-|--------|---------|
-| `claude-isolated-build` | Build the container image |
-| `claude-isolated-start <project-dir>` | Start a new container |
-| `claude-isolated-enter <name>` | Attach to a running container |
-| `claude-isolated-stop <name>` | Stop and remove a container |
-| `claude-isolated-ls` | List running containers |
+| Command | Purpose |
+|---------|---------|
+| `claude-isolated build` | Build the container image |
+| `claude-isolated start <project-dir>` | Start a new container |
+| `claude-isolated enter <name>` | Attach to a running container |
+| `claude-isolated stop <name>` | Stop and remove a container |
+| `claude-isolated ls` | List running containers |
 
 ## Config location
 
