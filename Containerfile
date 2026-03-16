@@ -26,7 +26,7 @@ WORKDIR /workspace
 # Zellij config and layout
 RUN mkdir -p /home/claude/.config/zellij/layouts
 COPY --chown=claude:claude config/layout.kdl /home/claude/.config/zellij/layouts/default.kdl
-RUN printf 'show_startup_tips false\nshow_release_notes false\n' > /home/claude/.config/zellij/config.kdl
+RUN printf 'default_shell "bash"\nshow_startup_tips false\nshow_release_notes false\n' > /home/claude/.config/zellij/config.kdl
 
 # Install uv
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh

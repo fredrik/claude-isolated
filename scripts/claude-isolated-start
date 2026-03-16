@@ -48,7 +48,7 @@ if [[ -e "$INIT_HOME/.claude/credentials.json" ]]; then
 fi
 
 # --- Start container ---
-podman run -d \
+podman run -it \
     --name "$NAME" \
     -e "CLAUDE_ISOLATED_NAME=$NAME" \
     -v "$PROJECT_DIR:/workspace:rw" \
@@ -58,9 +58,5 @@ podman run -d \
     -v "$INIT_HOME/.ssh:/home/claude/.ssh:ro" \
     -v "$INIT_HOME/.gitconfig:/home/claude/.gitconfig:ro" \
     "${OPTIONAL_MOUNTS[@]}" \
-    claude-isolated:latest
-
-echo "Started: $NAME" >&2
-
-# --- Attach ---
-podman exec -it "$NAME" zellij attach --create "$NAME"
+    claude-isolated:latest \
+    zellij
