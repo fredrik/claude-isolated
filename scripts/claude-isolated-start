@@ -59,4 +59,4 @@ podman run -it \
     -v "$INIT_HOME/.gitconfig:/home/claude/.gitconfig:ro" \
     "${OPTIONAL_MOUNTS[@]}" \
     claude-isolated:latest \
-    zellij
+    zellij --session "$NAME"
