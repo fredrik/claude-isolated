@@ -50,7 +50,6 @@ podman run -d \
     -v "$CLAUDE_DIR/CLAUDE.md:/home/claude/.claude/CLAUDE.md:ro" \
     -v "$ISOLATED_DIR/ssh:/home/claude/.ssh:ro" \
     -v "$ISOLATED_DIR/gitconfig:/home/claude/.gitconfig:ro" \
-    -it \
     claude-isolated:latest
 
 echo "Started: $NAME"
