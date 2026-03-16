@@ -14,7 +14,8 @@ ADJECTIVES=()
 NOUNS=()
 section="adj"
 while IFS= read -r line; do
-    [[ -z "$line" || "$line" =~ ^# ]] && { section="noun"; continue; }
+    [[ "$line" =~ ^# ]] && continue
+    [[ -z "$line" ]] && { section="noun"; continue; }
     if [[ "$section" == "adj" ]]; then
         ADJECTIVES+=("$line")
     else
@@ -27,29 +28,36 @@ NOUN="${NOUNS[$((RANDOM % ${#NOUNS[@]}))]}"
 NAME="claude-isolated-${ADJ}-${NOUN}"
 
 # --- Host paths ---
-CLAUDE_JSON="$HOME/.claude.json"
-CLAUDE_DIR="$HOME/.claude"
-ISOLATED_DIR="$HOME/.claude-isolated"
+INIT_HOME="${CLAUDE_ISOLATED_HOME:-$HOME/.config/claude-isolated/home}"
 
 # --- Validate required files ---
-for f in "$CLAUDE_JSON" "$CLAUDE_DIR/settings.json" "$ISOLATED_DIR/ssh" "$ISOLATED_DIR/gitconfig"; do
+for f in "$INIT_HOME/.claude.json" "$INIT_HOME/.claude/settings.json" "$INIT_HOME/.ssh" "$INIT_HOME/.gitconfig"; do
     if [[ ! -e "$f" ]]; then
         echo "Missing: $f" >&2
+        echo "Bootstrap with:" >&2
+        echo "  cp -r $PROJECT_ROOT/home.example $INIT_HOME" >&2
+        echo "Then edit the files with your actual config." >&2
         exit 1
     fi
 done
+
+# --- Optional mounts ---
+OPTIONAL_MOUNTS=()
+if [[ -e "$INIT_HOME/.claude/credentials.json" ]]; then
+    OPTIONAL_MOUNTS+=(-v "$INIT_HOME/.claude/credentials.json:/home/claude/.claude/.credentials.json:rw")
+fi
 
 # --- Start container ---
 podman run -d \
     --name "$NAME" \
     -e "CLAUDE_ISOLATED_NAME=$NAME" \
     -v "$PROJECT_DIR:/workspace:rw" \
-    -v "$CLAUDE_JSON:/home/claude/.claude.json:ro" \
-    -v "$CLAUDE_DIR/settings.json:/home/claude/.claude/settings.json:ro" \
-    -v "$CLAUDE_DIR/plugins:/home/claude/.claude/plugins:ro" \
-    -v "$CLAUDE_DIR/CLAUDE.md:/home/claude/.claude/CLAUDE.md:ro" \
-    -v "$ISOLATED_DIR/ssh:/home/claude/.ssh:ro" \
-    -v "$ISOLATED_DIR/gitconfig:/home/claude/.gitconfig:ro" \
+    -v "$INIT_HOME/.claude.json:/home/claude/.claude.json:rw" \
+    -v "$INIT_HOME/.claude/settings.json:/home/claude/.claude/settings.json:rw" \
+    -v "$INIT_HOME/.claude/CLAUDE.md:/home/claude/.claude/CLAUDE.md:ro" \
+    -v "$INIT_HOME/.ssh:/home/claude/.ssh:ro" \
+    -v "$INIT_HOME/.gitconfig:/home/claude/.gitconfig:ro" \
+    "${OPTIONAL_MOUNTS[@]}" \
     claude-isolated:latest
 
 echo "Started: $NAME"
