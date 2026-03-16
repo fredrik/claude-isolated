@@ -9,7 +9,13 @@ while [[ -L "$SOURCE" ]]; do
 done
 SCRIPT_DIR="$(cd "$(dirname "$SOURCE")" && pwd)"
 
-cmd="${1:?Usage: claude-isolated <command> [args...]}"
+# Default: build + start <project-dir>
+if [[ $# -eq 0 ]] || [[ ! -x "$SCRIPT_DIR/claude-isolated-$1" ]]; then
+    "$SCRIPT_DIR/claude-isolated-build"
+    exec "$SCRIPT_DIR/claude-isolated-start" "${@:-.}"
+fi
+
+cmd="$1"
 shift
 
 subcmd="$SCRIPT_DIR/claude-isolated-${cmd}"
