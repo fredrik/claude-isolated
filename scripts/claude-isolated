@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SOURCE="$0"
+while [[ -L "$SOURCE" ]]; do
+    SCRIPT_DIR="$(cd "$(dirname "$SOURCE")" && pwd)"
+    SOURCE="$(readlink "$SOURCE")"
+    [[ "$SOURCE" != /* ]] && SOURCE="$SCRIPT_DIR/$SOURCE"
+done
+SCRIPT_DIR="$(cd "$(dirname "$SOURCE")" && pwd)"
+
+cmd="${1:?Usage: claude-isolated <command> [args...]}"
+shift
+
+subcmd="$SCRIPT_DIR/claude-isolated-${cmd}"
+if [[ ! -x "$subcmd" ]]; then
+    echo "Unknown command: $cmd" >&2
+    echo "Available commands:" >&2
+    for f in "$SCRIPT_DIR"/claude-isolated-*; do
+        [[ -x "$f" ]] && echo "  ${f##*claude-isolated-}" >&2
+    done
+    exit 1
+fi
+
+exec "$subcmd" "$@"
