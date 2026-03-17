@@ -50,20 +50,20 @@ def cmd_start(args: argparse.Namespace) -> None:
         sys.exit(f"Not a directory: {project_dir}")
 
     name = generate_name()
-    home = init_home()
+    isolated_home = init_home()
 
     required = [
-        home / ".claude.json",
-        home / ".claude" / "settings.json",
-        home / ".ssh",
-        home / ".gitconfig",
-        home / ".config" / "gh" / "hosts.yml",
+        isolated_home / ".claude.json",
+        isolated_home / ".claude" / "settings.json",
+        isolated_home / ".ssh",
+        isolated_home / ".gitconfig",
+        isolated_home / ".config" / "gh" / "hosts.yml",
     ]
     for f in required:
         if not f.exists():
             print(f"Missing: {f}", file=sys.stderr)
             print(f"Bootstrap with:", file=sys.stderr)
-            print(f"  cp -r {PROJECT_ROOT / 'home.example'} {home}", file=sys.stderr)
+            print(f"  cp -r {PROJECT_ROOT / 'home.example'} {isolated_home}", file=sys.stderr)
             print("Then edit the files with your actual config.", file=sys.stderr)
             sys.exit(1)
 
@@ -72,15 +72,15 @@ def cmd_start(args: argparse.Namespace) -> None:
         "--name", name,
         "-e", f"CLAUDE_ISOLATED_NAME={name}",
         "-v", f"{project_dir}:/workspace:rw",
-        "-v", f"{home / '.claude.json'}:/home/claude/.claude.json:rw",
-        "-v", f"{home / '.claude' / 'settings.json'}:/home/claude/.claude/settings.json:rw",
-        "-v", f"{home / '.claude' / 'CLAUDE.md'}:/home/claude/.claude/CLAUDE.md:ro",
-        "-v", f"{home / '.ssh'}:/home/claude/.ssh:ro",
-        "-v", f"{home / '.gitconfig'}:/home/claude/.gitconfig:ro",
-        "-v", f"{home / '.config' / 'gh'}:/home/claude/.config/gh:rw",
+        "-v", f"{isolated_home / '.claude.json'}:/home/claude/.claude.json:rw",
+        "-v", f"{isolated_home / '.claude' / 'settings.json'}:/home/claude/.claude/settings.json:rw",
+        "-v", f"{isolated_home / '.claude' / 'CLAUDE.md'}:/home/claude/.claude/CLAUDE.md:ro",
+        "-v", f"{isolated_home / '.ssh'}:/home/claude/.ssh:ro",
+        "-v", f"{isolated_home / '.gitconfig'}:/home/claude/.gitconfig:ro",
+        "-v", f"{isolated_home / '.config' / 'gh'}:/home/claude/.config/gh:rw",
     ]
 
-    creds = home / ".claude" / "credentials.json"
+    creds = isolated_home / ".claude" / "credentials.json"
     if creds.exists():
         run_args += ["-v", f"{creds}:/home/claude/.claude/.credentials.json:rw"]
 
