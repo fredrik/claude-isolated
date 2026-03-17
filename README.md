@@ -35,6 +35,7 @@ Edit the files with your actual values:
 |------|-------------------|
 | `.gitconfig` | Your name and email |
 | `.ssh/` | SSH keys for git access |
+| `.config/gh/hosts.yml` | Copy from `~/.config/gh/hosts.yml` (GitHub CLI auth) |
 | `.claude.json` | Copy from `~/.claude.json` |
 | `.claude/settings.json` | Copy from `~/.claude/settings.json` |
 | `.claude/credentials.json` | Optional. See [First-time auth](#first-time-auth) |
@@ -88,8 +89,11 @@ The directory mirrors the container's `/home/claude/`:
 │   ├── settings.json
 │   ├── credentials.json   (optional, rw-mounted)
 │   └── CLAUDE.md
+├── .config/
+│   └── gh/
+│       └── hosts.yml
 ├── .gitconfig
 └── .ssh/
 ```
 
-`.gitconfig`, `.ssh/`, and `.claude/CLAUDE.md` are mounted read-only. The rest are read-write so Claude Code can update auth tokens, session state, and settings.
+`.gitconfig`, `.ssh/`, `.config/gh/`, and `.claude/CLAUDE.md` are mounted read-only. The rest are read-write so Claude Code can update auth tokens, session state, and settings.

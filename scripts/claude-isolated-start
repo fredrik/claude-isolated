@@ -31,7 +31,7 @@ NAME="claude-isolated-${ADJ}-${NOUN}"
 INIT_HOME="${CLAUDE_ISOLATED_HOME:-$HOME/.config/claude-isolated/home}"
 
 # --- Validate required files ---
-for f in "$INIT_HOME/.claude.json" "$INIT_HOME/.claude/settings.json" "$INIT_HOME/.ssh" "$INIT_HOME/.gitconfig"; do
+for f in "$INIT_HOME/.claude.json" "$INIT_HOME/.claude/settings.json" "$INIT_HOME/.ssh" "$INIT_HOME/.gitconfig" "$INIT_HOME/.config/gh/hosts.yml"; do
     if [[ ! -e "$f" ]]; then
         echo "Missing: $f" >&2
         echo "Bootstrap with:" >&2
@@ -57,6 +57,7 @@ podman run -it --rm \
     -v "$INIT_HOME/.claude/CLAUDE.md:/home/claude/.claude/CLAUDE.md:ro" \
     -v "$INIT_HOME/.ssh:/home/claude/.ssh:ro" \
     -v "$INIT_HOME/.gitconfig:/home/claude/.gitconfig:ro" \
+    -v "$INIT_HOME/.config/gh:/home/claude/.config/gh:rw" \
     "${OPTIONAL_MOUNTS[@]}" \
     claude-isolated:latest \
     claude --dangerously-skip-permissions
