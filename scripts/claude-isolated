@@ -78,7 +78,7 @@ def cmd_start(args: argparse.Namespace) -> None:
         "-v", f"{isolated_home / '.config' / 'gh'}:/home/claude/.config/gh:rw",
     ]
 
-    creds = isolated_home / ".claude" / "credentials.json"
+    creds = isolated_home / ".claude" / ".credentials.json"
     if creds.exists():
         run_args += ["-v", f"{creds}:/home/claude/.claude/.credentials.json:rw"]
 
