@@ -72,11 +72,14 @@ def cmd_start(args: argparse.Namespace) -> None:
         "-v", f"{workspace}:/workspace:rw",
         "-v", f"{isolated_home / '.claude.json'}:/home/claude/.claude.json:rw",
         "-v", f"{isolated_home / '.claude' / 'settings.json'}:/home/claude/.claude/settings.json:rw",
-        "-v", f"{isolated_home / '.claude' / 'CLAUDE.md'}:/home/claude/.claude/CLAUDE.md:ro",
         "-v", f"{isolated_home / '.ssh'}:/home/claude/.ssh:ro",
         "-v", f"{isolated_home / '.gitconfig'}:/home/claude/.gitconfig:ro",
         "-v", f"{isolated_home / '.config' / 'gh'}:/home/claude/.config/gh:rw",
     ]
+
+    claude_md = isolated_home / ".claude" / "CLAUDE.md"
+    if claude_md.exists():
+        run_args += ["-v", f"{claude_md}:/home/claude/.claude/CLAUDE.md:ro"]
 
     creds = isolated_home / ".claude" / ".credentials.json"
     if creds.exists():
