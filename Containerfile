@@ -11,8 +11,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
-# Install zellij
-RUN curl -LsSf https://github.com/zellij-org/zellij/releases/latest/download/zellij-aarch64-unknown-linux-musl.tar.gz \
+# Install zellij (detect architecture)
+ARG TARGETARCH
+RUN case "${TARGETARCH:-$(dpkg --print-architecture)}" in \
+        amd64|x86_64) ZARCH="x86_64" ;; \
+        arm64|aarch64) ZARCH="aarch64" ;; \
+        *) echo "Unsupported arch: $TARGETARCH" >&2; exit 1 ;; \
+    esac && \
+    curl -LsSf "https://github.com/zellij-org/zellij/releases/latest/download/zellij-${ZARCH}-unknown-linux-musl.tar.gz" \
     | tar xz -C /usr/local/bin
 
 # Install GitHub CLI
