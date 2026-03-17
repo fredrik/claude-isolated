@@ -20,7 +20,7 @@ cleanup() {
 trap cleanup EXIT
 
 # Setup
-TEST_DIR="$(mktemp -d "$HOME/tmp/claude-isolated-test.XXXXX")"
+TEST_DIR="$(mktemp -d /tmp/claude-isolated-test.XXXXX)"
 
 # Build
 echo "--- Building image ---"
