@@ -99,7 +99,7 @@ def cmd_enter(args: argparse.Namespace) -> None:
 
 
 def cmd_stop(args: argparse.Namespace) -> None:
-    subprocess.run(["podman", "stop", args.name], capture_output=True)
+    subprocess.run(["podman", "stop", "-t", "2", args.name], capture_output=True)
     subprocess.run(["podman", "rm", args.name], capture_output=True)
     print(f"Stopped and removed: {args.name}")
 

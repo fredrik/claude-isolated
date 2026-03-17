@@ -4,7 +4,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 CLI="$PROJECT_ROOT/scripts/claude-isolated"
-CONTAINER_NAME=""
+IMAGE="claude-isolated:latest"
+CONTAINER_NAME="claude-isolated-test-$$"
 TEST_DIR=""
 
 # macOS doesn't have timeout; use perl as fallback
@@ -13,7 +14,7 @@ if ! command -v timeout &>/dev/null; then
 fi
 
 cleanup() {
-    [[ -n "$CONTAINER_NAME" ]] && podman rm -f "$CONTAINER_NAME" 2>/dev/null
+    podman rm -f "$CONTAINER_NAME" 2>/dev/null || true
     [[ -n "$TEST_DIR" ]] && rm -rf "$TEST_DIR"
 }
 trap cleanup EXIT
@@ -25,10 +26,11 @@ TEST_DIR="$(mktemp -d "$HOME/tmp/claude-isolated-test.XXXXX")"
 echo "--- Building image ---"
 "$CLI" build
 
-# Start — capture the name from output
-echo "--- Starting container ---"
-OUTPUT=$("$CLI" start "$TEST_DIR")
-CONTAINER_NAME=$(echo "$OUTPUT" | grep '^Started:' | awk '{print $2}')
+# Start a test container directly (the start subcommand runs interactively)
+echo "--- Starting test container ---"
+podman run -d --rm --name "$CONTAINER_NAME" \
+    -v "$TEST_DIR:/workspace:rw" \
+    "$IMAGE" sleep infinity
 echo "Container: $CONTAINER_NAME"
 
 # Verify tools (timeout each command to catch hangs)
@@ -50,6 +52,5 @@ echo "--- Verifying ls ---"
 # Stop
 echo "--- Stopping container ---"
 "$CLI" stop "$CONTAINER_NAME"
-CONTAINER_NAME=""  # prevent double-cleanup
 
 echo "All tests passed."
