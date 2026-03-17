@@ -41,10 +41,11 @@ Edit the files with your actual values:
 | `.claude/credentials.json` | Optional. See [First-time auth](#first-time-auth) |
 | `.claude/CLAUDE.md` | Instructions for isolated Claude sessions |
 
-Start a container with a project directory mounted at `/workspace`:
+Start a container from the directory you want mounted at `/workspace`:
 
 ```
-claude-isolated start ~/code/my-project
+cd ~/code/my-project
+claude-isolated start
 ```
 
 Attach to it:
@@ -71,7 +72,7 @@ podman cp <container-name>:/home/claude/.claude/.credentials.json \
 | Command | Purpose |
 |---------|---------|
 | `claude-isolated build` | Build the container image |
-| `claude-isolated start <project-dir>` | Start a new container |
+| `claude-isolated start` | Start a new container (mounts cwd) |
 | `claude-isolated enter <name>` | Attach to a running container |
 | `claude-isolated stop <name>` | Stop and remove a container |
 | `claude-isolated ls` | List running containers |

@@ -45,7 +45,7 @@ def cmd_build(args: argparse.Namespace) -> None:
 
 
 def cmd_start(args: argparse.Namespace) -> None:
-    project_dir = Path(".").resolve()
+    workspace = Path(".").resolve()
 
     name = generate_name()
     isolated_home = init_home()
@@ -69,7 +69,7 @@ def cmd_start(args: argparse.Namespace) -> None:
         "podman", "run", "-it", "--rm",
         "--name", name,
         "-e", f"CLAUDE_ISOLATED_NAME={name}",
-        "-v", f"{project_dir}:/workspace:rw",
+        "-v", f"{workspace}:/workspace:rw",
         "-v", f"{isolated_home / '.claude.json'}:/home/claude/.claude.json:rw",
         "-v", f"{isolated_home / '.claude' / 'settings.json'}:/home/claude/.claude/settings.json:rw",
         "-v", f"{isolated_home / '.claude' / 'CLAUDE.md'}:/home/claude/.claude/CLAUDE.md:ro",
