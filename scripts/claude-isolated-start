@@ -6,8 +6,9 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 WORDLIST="$PROJECT_ROOT/config/wordlist.txt"
 
 # --- Args ---
-PROJECT_DIR="${1:?Usage: claude-isolated-start <project-dir>}"
+PROJECT_DIR="${1:?Usage: claude-isolated-start <project-dir> [prompt]}"
 PROJECT_DIR="$(cd "$PROJECT_DIR" && pwd)"  # resolve to absolute
+PROMPT="${2:-}"
 
 # --- Generate name ---
 ADJECTIVES=()
@@ -60,5 +61,5 @@ podman run -it --rm \
     -v "$INIT_HOME/.config/gh:/home/claude/.config/gh:rw" \
     "${OPTIONAL_MOUNTS[@]}" \
     claude-isolated:latest \
-    claude --dangerously-skip-permissions
+    claude --dangerously-skip-permissions ${PROMPT:+"$PROMPT"}
     # zellij --session "$NAME"
