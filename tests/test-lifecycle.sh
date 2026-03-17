@@ -3,6 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+CLI="$PROJECT_ROOT/scripts/claude-isolated"
 CONTAINER_NAME=""
 TEST_DIR=""
 
@@ -22,11 +23,11 @@ TEST_DIR="$(mktemp -d "$HOME/tmp/claude-isolated-test.XXXXX")"
 
 # Build
 echo "--- Building image ---"
-"$PROJECT_ROOT/scripts/claude-isolated-build"
+"$CLI" build
 
 # Start — capture the name from output
 echo "--- Starting container ---"
-OUTPUT=$("$PROJECT_ROOT/scripts/claude-isolated-start" "$TEST_DIR")
+OUTPUT=$("$CLI" start "$TEST_DIR")
 CONTAINER_NAME=$(echo "$OUTPUT" | grep '^Started:' | awk '{print $2}')
 echo "Container: $CONTAINER_NAME"
 
@@ -44,11 +45,11 @@ timeout 10 podman exec "$CONTAINER_NAME" bash -c '[[ "$(pwd)" == "/workspace" ]]
 
 # Verify ls script shows the container
 echo "--- Verifying ls ---"
-"$PROJECT_ROOT/scripts/claude-isolated-ls" | grep -q "$CONTAINER_NAME"
+"$CLI" ls | grep -q "$CONTAINER_NAME"
 
 # Stop
 echo "--- Stopping container ---"
-"$PROJECT_ROOT/scripts/claude-isolated-stop" "$CONTAINER_NAME"
+"$CLI" stop "$CONTAINER_NAME"
 CONTAINER_NAME=""  # prevent double-cleanup
 
 echo "All tests passed."

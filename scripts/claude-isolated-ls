@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-
-podman ps --filter "ancestor=claude-isolated:latest" \
-    --format "table {{.Names}}\t{{.Status}}\t{{.Created}}"

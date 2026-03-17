@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-
-NAME="${1:?Usage: claude-isolated-enter <name>}"
-
-# Create or attach to the container's Zellij session
-podman exec -it "$NAME" zellij attach --create "$NAME"

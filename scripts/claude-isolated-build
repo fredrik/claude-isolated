@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-
-podman build -t claude-isolated:latest "$PROJECT_ROOT"
-echo "Image built: claude-isolated:latest"
