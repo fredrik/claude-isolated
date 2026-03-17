@@ -100,8 +100,14 @@ def cmd_enter(args: argparse.Namespace) -> None:
 
 
 def cmd_stop(args: argparse.Namespace) -> None:
-    subprocess.run(["podman", "stop", "-t", "2", args.name], capture_output=True)
-    subprocess.run(["podman", "rm", args.name], capture_output=True)
+    stop = subprocess.run(["podman", "stop", "-t", "2", args.name], capture_output=True)
+    if stop.returncode != 0:
+        print(f"Failed to stop container: {args.name}", file=sys.stderr)
+        sys.exit(1)
+    rm = subprocess.run(["podman", "rm", args.name], capture_output=True)
+    if rm.returncode != 0:
+        print(f"Stopped but failed to remove container: {args.name}", file=sys.stderr)
+        sys.exit(1)
     print(f"Stopped and removed: {args.name}")
 
 
