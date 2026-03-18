@@ -80,9 +80,11 @@ def cmd_init(args: argparse.Namespace) -> None:
     print("Edit the files with your actual config.")
 
 
-def cmd_build(args: argparse.Namespace) -> None:
-    subprocess.run(["podman", "build", "-t", IMAGE, str(PROJECT_ROOT)], check=True)
-    print(f"Image built: {IMAGE}")
+def cmd_build(args: argparse.Namespace, silent: bool = False) -> None:
+    kwargs = {"stdout": subprocess.DEVNULL, "stderr": subprocess.DEVNULL} if silent else {}
+    subprocess.run(["podman", "build", "-t", IMAGE, str(PROJECT_ROOT)], check=True, **kwargs)
+    if not silent:
+        print(f"Image built: {IMAGE}")
 
 
 def cmd_start(args: argparse.Namespace) -> None:
@@ -158,8 +160,7 @@ def main() -> None:
     if not sys.argv[1:] or sys.argv[1] not in SUBCOMMANDS:
         prompt = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else ""
         with spinner("Building Containerfile.."):
-            subprocess.run(["podman", "build", "-t", IMAGE, str(PROJECT_ROOT)],
-                           check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            cmd_build(argparse.Namespace(), silent=True)
         print(f'\r✔ Running Claude Code in bypass permissions mode..')
         cmd_start(argparse.Namespace(prompt=prompt))
         return
