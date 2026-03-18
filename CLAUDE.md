@@ -9,7 +9,6 @@ Containerfile              # Debian bookworm-slim image
 scripts/
   claude-isolated          # Python script (uv run): build, start, stop, ls
 config/
-  wordlist.txt             # Adjectives + nouns for random naming (blank line separates sections)
   layout.kdl               # Zellij layout: launches claude --dangerously-skip-permissions
 home.example/              # Bootstrap template for ~/.config/claude-isolated/home
 tests/
@@ -32,6 +31,6 @@ Requires Podman running. Builds image, starts a container, verifies tools (pytho
 
 - Main script is Python, runnable via `uv run scripts/claude-isolated`
 - Container user is `claude` (`/home/claude/`)
-- Container names follow `claude-isolated-{adjective}-{noun}` pattern
+- Container names follow `claude-isolated-{random-name or hex}` pattern
 - Image tag is `claude-isolated:latest`
 - No nodejs/npm — Claude Code installed via `claude.ai/install.sh`
