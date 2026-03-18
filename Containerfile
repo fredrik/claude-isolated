@@ -9,6 +9,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     openssh-client \
     python3 \
     python3-pip \
+    tzdata \
+    && ln -fs /usr/share/zoneinfo/Europe/Stockholm /etc/localtime \
+    && dpkg-reconfigure -f noninteractive tzdata \
     && rm -rf /var/lib/apt/lists/*
 
 # Install zellij (detect architecture)
