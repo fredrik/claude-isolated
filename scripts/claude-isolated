@@ -11,6 +11,7 @@ import os
 import random
 import shutil
 import subprocess
+import signal
 import sys
 import threading
 from pathlib import Path
@@ -111,7 +112,16 @@ def cmd_start(args: argparse.Namespace) -> None:
     if args.prompt:
         run_args.append(args.prompt)
 
-    os.execvp("podman", run_args)
+    signal.signal(signal.SIGHUP, lambda *_: sys.exit(1))
+
+    try:
+        subprocess.run(run_args)
+    finally:
+        # Ensure the container gets stopped and removed on exit (including on Ctrl+C or SIGHUP, which happens when closing a terminal tab for example).
+        subprocess.run(["podman", "stop", "-t", "10", name],
+                        capture_output=True)
+        subprocess.run(["podman", "rm", name],
+                        capture_output=True)
 
 
 def cmd_enter(args: argparse.Namespace) -> None:
