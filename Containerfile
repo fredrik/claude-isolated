@@ -36,12 +36,6 @@ RUN mkdir -p /home/claude/.claude /workspace \
     && chown -R claude:claude /home/claude /workspace
 
 USER claude
-WORKDIR /workspace
-
-# Zellij config and layout
-RUN mkdir -p /home/claude/.config/zellij/layouts
-COPY --chown=claude:claude config/layout.kdl /home/claude/.config/zellij/layouts/default.kdl
-RUN printf 'default_shell "bash"\nshow_startup_tips false\nshow_release_notes false\n' > /home/claude/.config/zellij/config.kdl
 
 # Install uv
 ARG UV_VERSION=0.10.11
@@ -54,5 +48,13 @@ RUN curl -fsSL https://claude.ai/install.sh -o /tmp/install-claude.sh \
     && rm /tmp/install-claude.sh
 
 # uv and claude on PATH
-ENV PATH="/home/claude/.local/bin:/home/claude/.claude/local/bin:$PATH"
+ENV PATH="/home/claude/bin:/home/claude/.local/bin:/home/claude/.claude/local/bin:$PATH"
 
+WORKDIR /workspace
+
+# Container scripts and config
+RUN mkdir -p /home/claude/bin /home/claude/.config/zellij
+COPY --chown=claude:claude container/start-claude /home/claude/bin/start-claude
+COPY --chown=claude:claude container/start-zellij /home/claude/bin/start-zellij
+COPY --chown=claude:claude container/zellij-config.kdl /home/claude/.config/zellij/config.kdl
+RUN chmod +x /home/claude/bin/start-claude /home/claude/bin/start-zellij

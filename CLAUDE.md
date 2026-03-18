@@ -8,8 +8,10 @@ Run Claude Code in isolated Podman containers with Zellij sessions.
 Containerfile              # Debian bookworm-slim image
 bin/
   claude-isolated          # Python script (uv run): build, start, stop, ls
-config/
-  layout.kdl               # Zellij layout: launches claude --dangerously-skip-permissions
+container/
+  start-zellij             # Entrypoint: launches zellij with an inline layout
+  start-claude             # Launches claude --dangerously-skip-permissions
+  zellij-config.kdl        # Zellij config (no startup tips, bash as default shell)
 home.example/              # Bootstrap template for ~/.config/claude-isolated/home
 tests/
   test-lifecycle.sh        # Automated build/start/verify/stop test

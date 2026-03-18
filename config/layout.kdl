@@ -1,5 +1,0 @@
-layout {
-    pane command="claude" close_on_exit=true {
-        args "--dangerously-skip-permissions"
-    }
-}

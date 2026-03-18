@@ -1,0 +1,4 @@
+#!/bin/bash
+exec claude --dangerously-skip-permissions \
+    ${CONTAINER_NAME:+--name "$CONTAINER_NAME"} \
+    ${CLAUDE_PROMPT:+"$CLAUDE_PROMPT"}

@@ -1,0 +1,3 @@
+#!/bin/bash
+exec zellij -n <(printf 'layout {\n    pane command="start-claude" close_on_exit=true\n}\n') \
+    ${CONTAINER_NAME:+--session "$CONTAINER_NAME"}

@@ -67,6 +67,21 @@ If you don't have `credentials.json` yet, start a container without it. Claude C
 | `claude-isolated stop <name>` | Stop and remove a container |
 | `claude-isolated ls` | List running containers |
 
+## Structure
+
+```
+Containerfile              # Debian bookworm-slim image
+bin/
+  claude-isolated          # Main script (uv run): build, start, stop, ls
+container/
+  start-zellij             # Entrypoint: launches zellij with an inline layout
+  start-claude             # Launches claude --dangerously-skip-permissions
+  zellij-config.kdl        # Zellij config (no startup tips, bash as default shell)
+home.example/              # Bootstrap template for ~/.config/claude-isolated/home
+tests/
+  test-lifecycle.sh        # Automated build/start/verify/stop test
+```
+
 ## Config location
 
 Defaults to `~/.config/claude-isolated/home`. Override with `CLAUDE_ISOLATED_HOME`.
