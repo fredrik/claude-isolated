@@ -6,7 +6,7 @@ Run Claude Code in isolated Podman containers with Zellij sessions.
 
 ```
 Containerfile              # Debian bookworm-slim image
-scripts/
+bin/
   claude-isolated          # Python script (uv run): build, start, stop, ls
 config/
   layout.kdl               # Zellij layout: launches claude --dangerously-skip-permissions
@@ -29,7 +29,7 @@ Requires Podman running. Builds image, starts a container, verifies tools (pytho
 
 ## Conventions
 
-- Main script is Python, runnable via `uv run scripts/claude-isolated`
+- Main script is Python, runnable via `uv run bin/claude-isolated`
 - Container user is `claude` (`/home/claude/`)
 - Container names follow `claude-isolated-{random-name or hex}` pattern
 - Image tag is `claude-isolated:latest`

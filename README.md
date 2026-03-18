@@ -13,7 +13,7 @@ Each container gets its own workspace, while sharing an isolated set of Claude a
 Install:
 
 ```
-ln -s "$(pwd)/scripts/claude-isolated" ~/.local/bin/claude-isolated
+ln -s "$(pwd)/bin/claude-isolated" ~/.local/bin/claude-isolated
 ```
 
 Bootstrap your config:

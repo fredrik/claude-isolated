@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-CLI="$PROJECT_ROOT/scripts/claude-isolated"
+CLI="$PROJECT_ROOT/bin/claude-isolated"
 IMAGE="claude-isolated:latest"
 CONTAINER_NAME="claude-isolated-test-$$"
 TEST_DIR=""
