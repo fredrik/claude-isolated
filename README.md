@@ -37,9 +37,7 @@ Edit the files with your actual values:
 | `.ssh/` | SSH keys for git access |
 | `.config/gh/hosts.yml` | Copy from `~/.config/gh/hosts.yml` (GitHub CLI auth) |
 | `.claude.json` | Copy from `~/.claude.json` |
-| `.claude/settings.json` | Copy from `~/.claude/settings.json` |
-| `.claude/credentials.json` | Optional. See [First-time auth](#first-time-auth) |
-| `.claude/CLAUDE.md` | Instructions for isolated Claude sessions |
+| `.claude/` | Copy from `~/.claude/` (settings, credentials, CLAUDE.md, etc.) |
 
 Start a container from the directory you want mounted at `/workspace`:
 
@@ -86,10 +84,7 @@ The directory mirrors the container's `/home/claude/`:
 ```
 ~/.config/claude-isolated/home/
 ├── .claude.json
-├── .claude/
-│   ├── settings.json
-│   ├── credentials.json   (optional, rw-mounted)
-│   └── CLAUDE.md
+├── .claude/              (rw — settings, credentials, CLAUDE.md, etc.)
 ├── .config/
 │   └── gh/
 │       └── hosts.yml
@@ -97,4 +92,4 @@ The directory mirrors the container's `/home/claude/`:
 └── .ssh/
 ```
 
-`.gitconfig`, `.ssh/`, `.config/gh/`, and `.claude/CLAUDE.md` are mounted read-only. The rest are read-write so Claude Code can update auth tokens, session state, and settings.
+`.gitconfig` and `.ssh/` are mounted read-only. The rest (`.claude/`, `.claude.json`, `.config/gh/`) are read-write so Claude Code can update auth tokens, session state, and settings.

@@ -18,7 +18,7 @@ tests/
 
 ## Config
 
-Container config lives at `~/.config/claude-isolated/home/` (override with `CLAUDE_ISOLATED_HOME`). This mirrors `/home/claude/` inside the container. `.gitconfig`, `.ssh/`, and `.claude/CLAUDE.md` are mounted read-only; the rest read-write.
+Container config lives at `~/.config/claude-isolated/home/` (override with `CLAUDE_ISOLATED_HOME`). This mirrors `/home/claude/` inside the container. `.gitconfig` and `.ssh/` are mounted read-only; the rest (`.claude/`, `.claude.json`, `.config/gh/`) read-write.
 
 ## Testing
 
