@@ -53,4 +53,4 @@ echo "--- Verifying ls ---"
 echo "--- Stopping container ---"
 "$CLI" stop "$CONTAINER_NAME"
 
-echo "All tests passed."
+echo "All tests passed.""
