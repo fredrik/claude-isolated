@@ -9,6 +9,7 @@ import contextlib
 import itertools
 import os
 import random
+import shutil
 import subprocess
 import sys
 import threading
@@ -38,7 +39,7 @@ def generate_name() -> str:
     return f"claude-isolated-{adj}-{noun}"
 
 
-def init_home() -> Path:
+def path_for_isolated_home() -> Path:
     return Path(os.environ.get("CLAUDE_ISOLATED_HOME", Path.home() / ".config" / "claude-isolated" / "home"))
 
 
@@ -63,6 +64,16 @@ def spinner(message: str):
         t.join()
 
 
+def cmd_init(args: argparse.Namespace) -> None:
+    isolated_home = path_for_isolated_home()
+    if isolated_home.exists():
+        print(f"Already exists: {isolated_home}", file=sys.stderr)
+        sys.exit(1)
+    shutil.copytree(PROJECT_ROOT / "home.example", isolated_home)
+    print(f"Created: {isolated_home}")
+    print("Edit the files with your actual config.")
+
+
 def cmd_build(args: argparse.Namespace) -> None:
     subprocess.run(["podman", "build", "-t", IMAGE, str(PROJECT_ROOT)], check=True)
     print(f"Image built: {IMAGE}")
@@ -72,31 +83,22 @@ def cmd_start(args: argparse.Namespace) -> None:
     workspace = Path(".").resolve()
 
     name = generate_name()
-    isolated_home = init_home()
-
-    required = [
-        isolated_home / ".claude.json",
-        isolated_home / ".claude" / "settings.json",
-        isolated_home / ".ssh",
-        isolated_home / ".gitconfig",
-        isolated_home / ".config" / "gh" / "hosts.yml",
-    ]
-    for f in required:
-        if not f.exists():
-            print(f"Missing: {f}", file=sys.stderr)
-            print(f"Bootstrap with:", file=sys.stderr)
-            print(f"  cp -r {PROJECT_ROOT / 'home.example'} {isolated_home}", file=sys.stderr)
-            print("Then edit the files with your actual config.", file=sys.stderr)
-            sys.exit(1)
+    isolated_home = path_for_isolated_home()
 
     volumes = [
         (workspace, "/workspace", "rw"),
         (isolated_home / ".claude", "/home/claude/.claude", "rw"),
         (isolated_home / ".claude.json", "/home/claude/.claude.json", "rw"),
-        (isolated_home / ".ssh", "/home/claude/.ssh", "ro"),
-        (isolated_home / ".gitconfig", "/home/claude/.gitconfig", "ro"),
         (isolated_home / ".config" / "gh", "/home/claude/.config/gh", "rw"),
+        (isolated_home / ".gitconfig", "/home/claude/.gitconfig", "ro"),
     ]
+
+    if not isolated_home.exists():
+        print(f"Config directory not found: {isolated_home}", file=sys.stderr)
+        print(f"Run 'claude-isolated init' to create it.", file=sys.stderr)
+        sys.exit(1)
+
+    # TODO: consider re-adding per-file required checks
 
     run_args = [
         "podman", "run", "-it", "--rm",
@@ -139,7 +141,7 @@ def cmd_ls(args: argparse.Namespace) -> None:
     ], check=True)
 
 
-SUBCOMMANDS = {"build", "start", "enter", "stop", "ls"}
+SUBCOMMANDS = {"init", "build", "start", "enter", "stop", "ls"}
 
 
 def main() -> None:
@@ -154,6 +156,8 @@ def main() -> None:
 
     parser = argparse.ArgumentParser(description="Run Claude Code in isolated Podman containers")
     sub = parser.add_subparsers(dest="command")
+
+    sub.add_parser("init", help="Create config directory from template")
 
     sub.add_parser("build", help="Build the container image")
 
@@ -171,6 +175,7 @@ def main() -> None:
     args = parser.parse_args()
 
     commands = {
+        "init": cmd_init,
         "build": cmd_build,
         "start": cmd_start,
         "enter": cmd_enter,
