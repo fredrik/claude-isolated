@@ -148,6 +148,7 @@ def main() -> None:
         prompt = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else ""
         with spinner("Building Containerfile.."):
             cmd_build(argparse.Namespace(), silent=True)
+        print(f'\r✔ Running Zellij..')
         print(f'\r✔ Running Claude Code in bypass permissions mode..')
         cmd_start(argparse.Namespace(prompt=prompt))
         return
