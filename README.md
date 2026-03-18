@@ -7,6 +7,7 @@ Each container gets its own workspace, while sharing an isolated set of Claude a
 ## Prerequisites
 
 - [Podman](https://podman.io/)
+- [uv](https://docs.astral.sh/uv/)
 
 ## Quick start
 
