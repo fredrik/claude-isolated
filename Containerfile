@@ -44,11 +44,13 @@ COPY --chown=claude:claude config/layout.kdl /home/claude/.config/zellij/layouts
 RUN printf 'default_shell "bash"\nshow_startup_tips false\nshow_release_notes false\n' > /home/claude/.config/zellij/config.kdl
 
 # Install uv
-RUN curl -LsSf https://astral.sh/uv/0.10.11/install.sh | sh
+ARG UV_VERSION=0.10.11
+RUN curl -LsSf https://astral.sh/uv/${UV_VERSION}/install.sh | sh
 
 # Install Claude Code
+ARG CLAUDE_VERSION=2.1.77
 RUN curl -fsSL https://claude.ai/install.sh -o /tmp/install-claude.sh \
-    && bash /tmp/install-claude.sh 2.1.77 \
+    && bash /tmp/install-claude.sh ${CLAUDE_VERSION} \
     && rm /tmp/install-claude.sh
 
 # uv and claude on PATH
