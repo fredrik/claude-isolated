@@ -52,6 +52,10 @@ You can also pass a prompt directly:
 claude-isolated "fix the failing tests"
 ```
 
+## Usage notes
+
+Closing the Claude Code instance (e.g. `/exit`) will also close the zellij session and stop the container. New tabs opened within the session are plain bash panes and won't affect this behaviour.
+
 ## First-time auth
 
 If you don't have `credentials.json` yet, start a container without it. Claude Code will prompt you to authenticate. The credentials file is written inside the container at `/home/claude/.claude/.credentials.json` and persisted back to your config directory via the volume mount.
@@ -74,9 +78,10 @@ Containerfile              # Debian bookworm-slim image
 bin/
   claude-isolated          # Main script (uv run): build, start, stop, ls
 container/
-  start-zellij             # Entrypoint: launches zellij with an inline layout
+  start-zellij             # Entrypoint: launches zellij
   start-claude             # Launches claude --dangerously-skip-permissions
   zellij-config.kdl        # Zellij config (no startup tips, bash as default shell)
+  layout.kdl               # Zellij layout (claude pane + git diff pane)
 home.example/              # Bootstrap template for ~/.config/claude-isolated/home
 tests/
   test-lifecycle.sh        # Automated build/start/verify/stop test
