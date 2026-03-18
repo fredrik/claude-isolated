@@ -2,7 +2,7 @@ layout {
     pane split_direction="horizontal" {
         pane command="start-claude" close_on_exit=true focus=true
         pane command="watch" size="20%" {
-            args "-n1" "git" "diff" "--stat"
+            args "git" "diff" "--stat"
         }
     }
 }
