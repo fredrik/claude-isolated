@@ -89,16 +89,20 @@ def cmd_start(args: argparse.Namespace) -> None:
             print("Then edit the files with your actual config.", file=sys.stderr)
             sys.exit(1)
 
+    volumes = [
+        (workspace, "/workspace", "rw"),
+        (isolated_home / ".claude", "/home/claude/.claude", "rw"),
+        (isolated_home / ".claude.json", "/home/claude/.claude.json", "rw"),
+        (isolated_home / ".ssh", "/home/claude/.ssh", "ro"),
+        (isolated_home / ".gitconfig", "/home/claude/.gitconfig", "ro"),
+        (isolated_home / ".config" / "gh", "/home/claude/.config/gh", "rw"),
+    ]
+
     run_args = [
         "podman", "run", "-it", "--rm",
         "--name", name,
         "-e", f"CLAUDE_ISOLATED_NAME={name}",
-        "-v", f"{workspace}:/workspace:rw",
-        "-v", f"{isolated_home / '.claude'}:/home/claude/.claude:rw",
-        "-v", f"{isolated_home / '.claude.json'}:/home/claude/.claude.json:rw",
-        "-v", f"{isolated_home / '.ssh'}:/home/claude/.ssh:ro",
-        "-v", f"{isolated_home / '.gitconfig'}:/home/claude/.gitconfig:ro",
-        "-v", f"{isolated_home / '.config' / 'gh'}:/home/claude/.config/gh:rw",
+        *[flag for src, dest, mode in volumes for flag in ("-v", f"{src}:{dest}:{mode}")],
     ]
 
     run_args += [IMAGE, "claude", "--dangerously-skip-permissions"]
