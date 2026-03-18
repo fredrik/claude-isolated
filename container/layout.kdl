@@ -1,0 +1,4 @@
+layout {
+    default_tab_template { pane; }
+    pane command="start-claude" close_on_exit=true
+}

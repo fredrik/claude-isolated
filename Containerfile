@@ -60,8 +60,9 @@ ENV TERM=xterm-256color
 WORKDIR /workspace
 
 # Container scripts and config
-RUN mkdir -p /home/claude/bin /home/claude/.config/zellij
+RUN mkdir -p /home/claude/bin /home/claude/.config/zellij/layouts
 COPY --chown=claude:claude container/start-claude /home/claude/bin/start-claude
 COPY --chown=claude:claude container/start-zellij /home/claude/bin/start-zellij
 COPY --chown=claude:claude container/zellij-config.kdl /home/claude/.config/zellij/config.kdl
+COPY --chown=claude:claude container/layout.kdl /home/claude/.config/zellij/layouts/layout.kdl
 RUN chmod +x /home/claude/bin/start-claude /home/claude/bin/start-zellij
