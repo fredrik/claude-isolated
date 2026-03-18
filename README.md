@@ -2,7 +2,7 @@
 
 Run Claude Code in isolated containers with [zellij](https://zellij.dev/) sessions.
 
-Each container gets its own workspace, while sharing an isolated set of Claude auth and config, git config, and SSH keys.
+Each container gets its own workspace, while sharing an isolated set of Claude auth and config and git config.
 
 ## Prerequisites
 
@@ -16,17 +16,10 @@ Install:
 ln -s "$(pwd)/scripts/claude-isolated" ~/.local/bin/claude-isolated
 ```
 
-Build the image:
-
-```
-claude-isolated build
-```
-
 Bootstrap your config:
 
 ```
-mkdir -p ~/.config/claude-isolated
-cp -r home.example ~/.config/claude-isolated/home
+claude-isolated init
 ```
 
 Edit the files with your actual values:
@@ -34,7 +27,6 @@ Edit the files with your actual values:
 | File | What to put there |
 |------|-------------------|
 | `.gitconfig` | Your name and email |
-| `.ssh/` | SSH keys for git access |
 | `.config/gh/hosts.yml` | Copy from `~/.config/gh/hosts.yml` (GitHub CLI auth) |
 | `.claude.json` | Copy from `~/.claude.json` |
 | `.claude/` | Copy from `~/.claude/` (settings, credentials, CLAUDE.md, etc.) |
@@ -46,32 +38,31 @@ cd ~/code/my-project
 claude-isolated start
 ```
 
-Attach to it:
+Or use the default shorthand (builds image then starts):
 
 ```
-claude-isolated enter claude-isolated-bright-falcon
+cd ~/code/my-project
+claude-isolated
 ```
 
-This opens a zellij session with Claude Code running.
+You can also pass a prompt directly:
+
+```
+claude-isolated "fix the failing tests"
+```
 
 ## First-time auth
 
-If you don't have `credentials.json` yet, start and enter a container without it. Claude Code will prompt you to authenticate. The credentials file is written inside the container at `/home/claude/.claude/.credentials.json`.
-
-Copy it to your config dir so future containers pick it up:
-
-```
-podman cp <container-name>:/home/claude/.claude/.credentials.json \
-  ~/.config/claude-isolated/home/.claude/credentials.json
-```
+If you don't have `credentials.json` yet, start a container without it. Claude Code will prompt you to authenticate. The credentials file is written inside the container at `/home/claude/.claude/.credentials.json` and persisted back to your config directory via the volume mount.
 
 ## Commands
 
 | Command | Purpose |
 |---------|---------|
+| `claude-isolated [prompt]` | Build image + start container (default) |
+| `claude-isolated init` | Create config directory from template |
 | `claude-isolated build` | Build the container image |
-| `claude-isolated start` | Start a new container (mounts cwd) |
-| `claude-isolated enter <name>` | Attach to a running container |
+| `claude-isolated start [prompt]` | Start a new container (mounts cwd) |
 | `claude-isolated stop <name>` | Stop and remove a container |
 | `claude-isolated ls` | List running containers |
 
@@ -88,8 +79,7 @@ The directory mirrors the container's `/home/claude/`:
 ├── .config/
 │   └── gh/
 │       └── hosts.yml
-├── .gitconfig
-└── .ssh/
+└── .gitconfig
 ```
 
-`.gitconfig` and `.ssh/` are mounted read-only. The rest (`.claude/`, `.claude.json`, `.config/gh/`) are read-write so Claude Code can update auth tokens, session state, and settings.
+`.gitconfig` is mounted read-only. The rest (`.claude/`, `.claude.json`, `.config/gh/`) are read-write so Claude Code can update auth tokens, session state, and settings.
