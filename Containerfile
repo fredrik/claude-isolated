@@ -28,6 +28,7 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
         > /etc/apt/sources.list.d/github-cli.list \
     && apt-get update && apt-get install -y --no-install-recommends gh \
+    ncurses-term \
     && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user
@@ -49,6 +50,9 @@ RUN curl -fsSL https://claude.ai/install.sh -o /tmp/install-claude.sh \
 
 # uv and claude on PATH
 ENV PATH="/home/claude/bin:/home/claude/.local/bin:/home/claude/.claude/local/bin:$PATH"
+
+# Use multiple colours(!)
+ENV TERM=xterm-256color
 
 WORKDIR /workspace
 
