@@ -1,3 +1,10 @@
 default_shell "bash"
 show_startup_tips false
 show_release_notes false
+
+keybinds {
+    shared_except "locked" {
+        // Forward Shift+Enter to Claude as \x1b[13;2u (kitty keyboard protocol)
+        bind "Shift Enter" { Write 27 91 49 51 59 50 117; }
+    }
+}
