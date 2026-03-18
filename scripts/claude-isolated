@@ -113,7 +113,7 @@ def cmd_start(args: argparse.Namespace) -> None:
         *[flag for src, dest, mode in volumes for flag in ("-v", f"{src}:{dest}:{mode}")],
     ]
 
-    run_args += [IMAGE, "claude", "--dangerously-skip-permissions"]
+    run_args += [IMAGE, "claude", "--name", name, "--dangerously-skip-permissions"]
     if args.prompt:
         run_args.append(args.prompt)
 
