@@ -32,7 +32,7 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
 
 # Create non-root user
 RUN useradd -m -d /home/claude -s /bin/bash claude
-RUN mkdir -p /home/claude/.claude /home/claude/.ssh /workspace \
+RUN mkdir -p /home/claude/.claude /workspace \
     && chown -R claude:claude /home/claude /workspace
 
 USER claude
