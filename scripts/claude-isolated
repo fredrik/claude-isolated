@@ -47,6 +47,7 @@ def path_for_isolated_home() -> Path:
 @contextlib.contextmanager
 def spinner(message: str):
     done = threading.Event()
+    failed = False
 
     def _spin():
         for char in itertools.cycle("⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏"):
@@ -54,12 +55,16 @@ def spinner(message: str):
                 break
             print(f"\r{char} {message}", end="", flush=True)
             done.wait(0.08)
-        print(f"\r✔ {message}")
+        symbol = "✘" if failed else "✔"
+        print(f"\r{symbol} {message}")
 
     t = threading.Thread(target=_spin, daemon=True)
     t.start()
     try:
         yield
+    except BaseException:
+        failed = True
+        raise
     finally:
         done.set()
         t.join()
