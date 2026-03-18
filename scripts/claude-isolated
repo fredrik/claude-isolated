@@ -102,7 +102,7 @@ def cmd_start(args: argparse.Namespace) -> None:
     # TODO: consider re-adding per-file required checks
 
     run_args = [
-        "podman", "run", "-it", "--rm",
+        "podman", "run", "-it",
         "--name", name,
         "-e", f"CLAUDE_ISOLATED_NAME={name}",
         *[flag for src, dest, mode in volumes for flag in ("-v", f"{src}:{dest}:{mode}")],
