@@ -157,7 +157,7 @@ SUBCOMMANDS = {"init", "build", "start", "enter", "stop", "ls"}
 def main() -> None:
     # If first arg isn't a subcommand, treat as default: build + start [prompt]
     if not sys.argv[1:] or sys.argv[1] not in SUBCOMMANDS:
-        prompt = sys.argv[1] if len(sys.argv) > 1 else ""
+        prompt = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else ""
         with spinner("Building Containerfile.."):
             subprocess.run(["podman", "build", "-t", IMAGE, str(PROJECT_ROOT)],
                            check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
