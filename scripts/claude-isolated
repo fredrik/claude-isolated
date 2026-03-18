@@ -160,6 +160,7 @@ def main() -> None:
         with spinner("Building Containerfile.."):
             subprocess.run(["podman", "build", "-t", IMAGE, str(PROJECT_ROOT)],
                            check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        print(f'\r✔ Running Claude Code in bypass permissions mode..')
         cmd_start(argparse.Namespace(prompt=prompt))
         return
 
