@@ -7,7 +7,7 @@ Run Claude Code in isolated Podman containers with Zellij sessions.
 ```
 Containerfile              # Debian bookworm-slim image
 scripts/
-  claude-isolated          # Python script (uv run): build, start, enter, stop, ls
+  claude-isolated          # Python script (uv run): build, start, stop, ls
 config/
   wordlist.txt             # Adjectives + nouns for random naming (blank line separates sections)
   layout.kdl               # Zellij layout: launches claude --dangerously-skip-permissions

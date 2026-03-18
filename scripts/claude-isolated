@@ -125,12 +125,6 @@ def cmd_start(args: argparse.Namespace) -> None:
                         capture_output=True)
 
 
-def cmd_enter(args: argparse.Namespace) -> None:
-    os.execvp("podman", [
-        "podman", "exec", "-it", args.name,
-        "zellij", "attach", "--create", args.name,
-    ])
-
 
 def cmd_stop(args: argparse.Namespace) -> None:
     stop = subprocess.run(["podman", "stop", "-t", "2", args.name], capture_output=True)
@@ -152,7 +146,7 @@ def cmd_ls(args: argparse.Namespace) -> None:
     ], check=True)
 
 
-SUBCOMMANDS = {"init", "build", "start", "enter", "stop", "ls"}
+SUBCOMMANDS = {"init", "build", "start", "stop", "ls"}
 
 
 def main() -> None:
@@ -175,9 +169,6 @@ def main() -> None:
     p_start = sub.add_parser("start", help="Start a new container")
     p_start.add_argument("prompt", nargs="?", default="", help="Optional prompt for Claude")
 
-    p_enter = sub.add_parser("enter", help="Attach to a running container's Zellij session")
-    p_enter.add_argument("name", help="Container name")
-
     p_stop = sub.add_parser("stop", help="Stop and remove a container")
     p_stop.add_argument("name", help="Container name")
 
@@ -189,7 +180,6 @@ def main() -> None:
         "init": cmd_init,
         "build": cmd_build,
         "start": cmd_start,
-        "enter": cmd_enter,
         "stop": cmd_stop,
         "ls": cmd_ls,
     }
