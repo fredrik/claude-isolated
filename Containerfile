@@ -1,11 +1,10 @@
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 
 # System deps
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bash \
     ca-certificates \
     curl \
-    git \
     openssh-client \
     procps \
     python3 \
@@ -13,6 +12,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     tzdata \
     && ln -fs /usr/share/zoneinfo/Europe/Stockholm /etc/localtime \
     && dpkg-reconfigure -f noninteractive tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install git from sid (need 2.48+ for relativeworktrees extension)
+RUN echo "deb http://deb.debian.org/debian sid main" \
+        > /etc/apt/sources.list.d/sid.list \
+    && printf 'Package: *\nPin: release a=unstable\nPin-Priority: 100\n' \
+        > /etc/apt/preferences.d/sid.pref \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends -t sid git \
     && rm -rf /var/lib/apt/lists/*
 
 # Install zellij (detect architecture)

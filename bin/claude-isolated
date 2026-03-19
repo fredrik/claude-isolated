@@ -56,6 +56,53 @@ def spinner(message: str):
         t.join()
 
 
+class WorktreeInfo:
+    """Result of worktree detection."""
+    def __init__(self, bare_dir: Path | None = None, worktree_name: str = ""):
+        self.bare_dir = bare_dir      # Host path to .bare/
+        self.worktree_name = worktree_name  # Directory name of the worktree
+
+    @property
+    def is_worktree(self) -> bool:
+        return self.bare_dir is not None
+
+
+def detect_worktree(cwd: Path) -> WorktreeInfo:
+    """Detect if cwd is a git worktree in a bare-clone layout.
+
+    If cwd/.git is a file with a gitdir: pointer, walk up from the gitdir
+    target to find the .bare/ directory.
+
+    Returns WorktreeInfo with the host .bare/ path and the worktree name,
+    so that we can mount:
+      - cwd          -> /workspace/<name>
+      - .bare/       -> /workspace/.bare
+    This preserves the relative gitdir path (../.bare/worktrees/<name>).
+    """
+    dot_git = cwd / ".git"
+    if not dot_git.is_file():
+        return WorktreeInfo()
+
+    text = dot_git.read_text().strip()
+    if not text.startswith("gitdir:"):
+        return WorktreeInfo()
+
+    gitdir_raw = text.split("gitdir:", 1)[1].strip()
+    gitdir = (cwd / gitdir_raw).resolve()
+
+    # Walk up from gitdir to find a parent containing .bare/
+    candidate = gitdir
+    for _ in range(10):
+        candidate = candidate.parent
+        bare = candidate / ".bare"
+        if bare.is_dir():
+            return WorktreeInfo(bare_dir=bare, worktree_name=cwd.name)
+        if candidate == candidate.parent:
+            break
+
+    return WorktreeInfo()
+
+
 def cmd_init(args: argparse.Namespace) -> None:
     isolated_home = path_for_isolated_home()
     if isolated_home.exists():
@@ -74,18 +121,27 @@ def cmd_build(args: argparse.Namespace, silent: bool = False) -> None:
 
 
 def cmd_start(args: argparse.Namespace) -> None:
-    workspace = Path(".").resolve()
+    cwd = Path(".").resolve()
+    wt = detect_worktree(cwd)
 
     name = generate_name()
     isolated_home = path_for_isolated_home()
 
+    if wt.is_worktree:
+        workspace_mount = f"/workspace/{wt.worktree_name}"
+    else:
+        workspace_mount = "/workspace"
+
     volumes = [
-        (workspace, "/workspace", "rw"),
+        (cwd, workspace_mount, "rw"),
         (isolated_home / ".claude", "/home/claude/.claude", "rw"),
         (isolated_home / ".claude.json", "/home/claude/.claude.json", "rw"),
         (isolated_home / ".config" / "gh", "/home/claude/.config/gh", "rw"),
         (isolated_home / ".gitconfig", "/home/claude/.gitconfig", "ro"),
     ]
+
+    if wt.is_worktree:
+        volumes.append((wt.bare_dir, "/workspace/.bare", "rw"))
 
     if not isolated_home.exists():
         print(f"Config directory not found: {isolated_home}", file=sys.stderr)
@@ -99,6 +155,9 @@ def cmd_start(args: argparse.Namespace) -> None:
         "--name", name,
         *[flag for src, dest, mode in volumes for flag in ("-v", f"{src}:{dest}:{mode}")],
     ]
+
+    if wt.is_worktree:
+        run_args += ["-w", workspace_mount]
 
     run_args += ["-e", f"CONTAINER_NAME={name}"]
     if args.prompt:

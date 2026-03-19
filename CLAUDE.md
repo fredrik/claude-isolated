@@ -5,7 +5,7 @@ Run Claude Code in isolated Podman containers with Zellij sessions.
 ## Structure
 
 ```
-Containerfile              # Debian bookworm-slim image
+Containerfile              # Debian trixie-slim image
 bin/
   claude-isolated          # Python script (uv run): build, start, stop, ls
   git-worktree-manager     # Bash script: run, ls, rm worktrees
@@ -57,3 +57,4 @@ Works from anywhere inside the project tree — finds the root by walking up to 
 - Container names follow `claude-isolated-{random-name or hex}` pattern
 - Image tag is `claude-isolated:latest`
 - No nodejs/npm — Claude Code installed via `claude.ai/install.sh`
+- Requires git 2.48+ in the container (for `relativeworktrees` extension used by worktree mounts); installed from Debian sid
