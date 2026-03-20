@@ -1,10 +1,14 @@
 # claude-isolated
 
-Run Claude Code with `--dangerously-skip-permissions` in an isolated Podman container.
+Run Claude Code with `--dangerously-skip-permissions` in a Podman container.
 
-Only the code you're working on (and Claude's config) is available to Claude.
+Claude is isolated from your host system: only the code you're working on (and Claude's config) is available inside the container.
 
-I made this in order to be able to let Claude Code run freely without constantly asking for permissions while being mostly safe inside a sandboxed environment. More sandboxing is certainly possible though! The main focus is being able to move quickly and somewhat safely.
+I made this so Claude can run freely ("yolo mode") without constantly asking for permissions, while staying sandboxed. More sandboxing is certainly possible though! The main goal is to let Claude work without my constant interruption.
+
+## What you get
+
+Sandboxed `claude` sessions in a Debian container with Python, uv, git, and Claude Code pre-installed.
 
 ## Prerequisites
 
@@ -19,7 +23,7 @@ Install:
 uv tool install git+https://github.com/fredrik/claude-isolated
 ```
 
-This command installs a single `claude-isolated` Python script to `~/.local/bin` (as per uv standard).
+This command installs a single `claude-isolated` Python script to `~/.local/bin` (uv's default).
 
 
 Bootstrap your config:
@@ -28,8 +32,7 @@ Bootstrap your config:
 claude-isolated init
 ```
 
-The bootstrap copies the 'home.example' directory to the config directory `~/.config/claude-isolated/home`. You might want to edit `.gitconfig`. Please note that your normal CLAUDE.md and other Claude config is not included by default, nor is any other files from your system.
-
+`init` copies the 'home.example' directory to the config directory (`~/.config/claude-isolated/home`). You might want to set your name and email in `.gitconfig`.
 
 Start a container from your project directory:
 
@@ -44,19 +47,21 @@ You can also pass a prompt directly:
 claude-isolated "fix the failing tests"
 ```
 
-`claude-isolated` will mount your project (the current directory) to `/workspace` inside the container. It will also mount the files inside `~/.config/claude-isolated/home` on your host to `/home/claude` inside the container. Any edits to those mounts are reflected on your host system.
+`claude-isolated` will mount your project (the current directory) to `/workspace` inside the container. It will also mount the files inside `~/.config/claude-isolated/home` on your host to `/home/claude` inside the container. Any edits by Claude to either code or settings via the mounted volumes are reflected on your host system: the files are read-write both ways.
 
 ## First-time auth
 
-On first start, Claude Code will prompt you to authenticate. The credentials are persisted to the config directory via the volume mount, as are any other Claude configurations. Auths and configs are shared across all `claude-isolated` sessions, just like they are in 'normal' `claude` sessions.
+On first start, Claude Code will prompt you to authenticate. The credentials are persisted to the config directory via the volume mount, as are any other Claude configurations. They are shared across all `claude-isolated` sessions via the config directory.
 
 ## Usage notes
 
-Closing the first Claude Code instance (Ctrl-D twice, Ctrl-C twice, or `/exit`) will also close the zellij session and stop the container. New tabs opened within the session are plain bash panes and won't affect this behaviour.
+Your normal CLAUDE.md and other Claude config is not included by default, nor are any other files from your system.
+
+Sessions are resumable since conversation history is stored in the shared config directory.
+
+Closing the main Claude Code instance (Ctrl-D twice, Ctrl-C twice, or `/exit`) will also close the zellij session and stop the container. New tabs opened within the session are plain bash panes and won't affect this behaviour.
 
 Closing the terminal tab, etc, should also close the session.
-
-Sessions are resumable as usual since `~/.config/claude-isolated/home/.claude` is shared between sessions.
 
 Use `claude-isolated ls` to list your running sessions.
 
@@ -65,9 +70,9 @@ Use `claude-isolated stop` to stop / remove a running session.
 
 ## Development process
 
-Pretty much all of this repo is written by Claude Code inside a sandboxed "yolo" environment.
+Nearly all of this repo was written by Claude Code inside a sandboxed "yolo" environment.
 
-README.md is written by a human. Promise!
+README.md was written by a human. Promise!
 
 
 ## Feedback
