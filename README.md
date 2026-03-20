@@ -1,15 +1,17 @@
 # claude-isolated
 
-Run Claude Code in isolated containers with [zellij](https://zellij.dev/) sessions.
+Run Claude Code with `--dangerously-skip-permissions` in an isolated Podman container.
 
-Each container gets its own workspace, while sharing an isolated set of Claude auth and config and git config.
+Only the code you're working on (and Claude's config) is available to Claude.
+
+I made this in order to be able to let Claude Code run freely without constantly asking for permissions while being mostly safe inside a sandboxed environment. More sandboxing is certainly possible though! The main focus is being able to move quickly and somewhat safely.
 
 ## Prerequisites
 
 - [Podman](https://podman.io/)
 - [uv](https://docs.astral.sh/uv/)
 
-## Quick start
+## How to use claude-isolated
 
 Install:
 
@@ -17,29 +19,19 @@ Install:
 uv tool install git+https://github.com/fredrik/claude-isolated
 ```
 
+This command installs a single `claude-isolated` Python script to `~/.local/bin` (as per uv standard).
+
+
 Bootstrap your config:
 
 ```
 claude-isolated init
 ```
 
-Edit the files with your actual values:
+The bootstrap copies the 'home.example' directory to the config directory `~/.config/claude-isolated/home`. You might want to edit `.gitconfig`. Please note that your normal CLAUDE.md and other Claude config is not included by default, nor is any other files from your system.
 
-| File | What to put there |
-|------|-------------------|
-| `.gitconfig` | Your name and email |
-| `.config/gh/hosts.yml` | Copy from `~/.config/gh/hosts.yml` (GitHub CLI auth) |
-| `.claude.json` | Copy from `~/.claude.json` |
-| `.claude/` | Copy from `~/.claude/` (settings, credentials, CLAUDE.md, etc.) |
 
-Start a container from the directory you want mounted at `/workspace`:
-
-```
-cd ~/code/my-project
-claude-isolated start
-```
-
-Or use the default shorthand (builds image then starts):
+Start a container from your project directory:
 
 ```
 cd ~/code/my-project
@@ -52,57 +44,33 @@ You can also pass a prompt directly:
 claude-isolated "fix the failing tests"
 ```
 
-## Usage notes
-
-Closing the Claude Code instance (e.g. `/exit`) will also close the zellij session and stop the container. New tabs opened within the session are plain bash panes and won't affect this behaviour.
+`claude-isolated` will mount your project (the current directory) to `/workspace` inside the container. It will also mount the files inside `~/.config/claude-isolated/home` on your host to `/home/claude` inside the container. Any edits to those mounts are reflected on your host system.
 
 ## First-time auth
 
-If you don't have `credentials.json` yet, start a container without it. Claude Code will prompt you to authenticate. The credentials file is written inside the container at `/home/claude/.claude/.credentials.json` and persisted back to your config directory via the volume mount.
+On first start, Claude Code will prompt you to authenticate. The credentials are persisted to the config directory via the volume mount, as are any other Claude configurations. Auths and configs are shared across all `claude-isolated` sessions, just like they are in 'normal' `claude` sessions.
 
-## Commands
+## Usage notes
 
-| Command | Purpose |
-|---------|---------|
-| `claude-isolated [prompt]` | Build image + start container (default) |
-| `claude-isolated init` | Create config directory from template |
-| `claude-isolated build` | Build the container image |
-| `claude-isolated start [prompt]` | Start a new container (mounts cwd) |
-| `claude-isolated stop <name>` | Stop and remove a container |
-| `claude-isolated ls` | List running containers |
+Closing the first Claude Code instance (Ctrl-D twice, Ctrl-C twice, or `/exit`) will also close the zellij session and stop the container. New tabs opened within the session are plain bash panes and won't affect this behaviour.
 
-## Structure
+Closing the terminal tab, etc, should also close the session.
 
-```
-pyproject.toml                     # Package definition (hatchling)
-src/claude_isolated/
-  cli.py                           # CLI entrypoint: build, start, stop, ls, init
-  data/
-    Containerfile                  # Debian trixie-slim image
-    container/
-      start-zellij                 # Entrypoint: launches zellij
-      start-claude                 # Launches claude --dangerously-skip-permissions
-      zellij-config.kdl            # Zellij config (no startup tips, bash as default shell)
-      layout.kdl                   # Zellij layout (claude pane + git diff pane)
-    home.example/                  # Bootstrap template for ~/.config/claude-isolated/home
-tests/
-  test-lifecycle.sh                # Automated build/start/verify/stop test
-```
+Sessions are resumable as usual since `~/.config/claude-isolated/home/.claude` is shared between sessions.
 
-## Config location
+Use `claude-isolated ls` to list your running sessions.
 
-Defaults to `~/.config/claude-isolated/home`. Override with `CLAUDE_ISOLATED_HOME`.
+Use `claude-isolated stop` to stop / remove a running session.
 
-The directory mirrors the container's `/home/claude/`:
 
-```
-~/.config/claude-isolated/home/
-├── .claude.json
-├── .claude/              (rw — settings, credentials, CLAUDE.md, etc.)
-├── .config/
-│   └── gh/
-│       └── hosts.yml
-└── .gitconfig
-```
+## Development process
 
-`.gitconfig` is mounted read-only. The rest (`.claude/`, `.claude.json`, `.config/gh/`) are read-write so Claude Code can update auth tokens, session state, and settings.
+Pretty much all of this repo is written by Claude Code inside a sandboxed "yolo" environment.
+
+README.md is written by a human. Promise!
+
+
+## Feedback
+
+Please open an issue or PR if you have trouble or if there's something you wish to improve!
+
