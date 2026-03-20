@@ -27,7 +27,7 @@ uv tool install git+https://github.com/fredrik/claude-isolated
 
 ## Config
 
-Container config lives at `~/.config/claude-isolated/home/` (override with `CLAUDE_ISOLATED_HOME`). This mirrors `/home/claude/` inside the container. `.gitconfig` is mounted read-only; the rest (`.claude/`, `.claude.json`, `.config/gh/`) read-write.
+Container config lives at `~/.config/claude-isolated/home/` (override with `CLAUDE_ISOLATED_HOME`). This mirrors `/home/claude/` inside the container. `.gitconfig` is mounted read-only; the rest (`.claude/`, `.claude.json`) read-write.
 
 ## Testing
 

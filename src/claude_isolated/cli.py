@@ -132,7 +132,6 @@ def cmd_start(args: argparse.Namespace) -> None:
         (cwd, workspace_mount, "rw"),
         (isolated_home / ".claude", "/home/claude/.claude", "rw"),
         (isolated_home / ".claude.json", "/home/claude/.claude.json", "rw"),
-        (isolated_home / ".config" / "gh", "/home/claude/.config/gh", "rw"),
         (isolated_home / ".gitconfig", "/home/claude/.gitconfig", "ro"),
     ]
 
