@@ -1,7 +1,3 @@
-#!/usr/bin/env -S uv run --script
-# /// script
-# requires-python = ">=3.10"
-# ///
 """Run Claude Code in isolated Podman containers."""
 
 import argparse
@@ -15,7 +11,7 @@ import sys
 import threading
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent / "data"
 IMAGE = "claude-isolated:latest"
 
 

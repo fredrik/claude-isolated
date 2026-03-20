@@ -1,0 +1,15 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "claude-isolated"
+version = "0.1.0"
+description = "Run Claude Code in isolated Podman containers"
+requires-python = ">=3.10"
+
+[project.scripts]
+claude-isolated = "claude_isolated.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/claude_isolated"]

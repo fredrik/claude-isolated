@@ -5,16 +5,24 @@ Run Claude Code in isolated Podman containers with Zellij sessions.
 ## Structure
 
 ```
-Containerfile              # Debian trixie-slim image
-bin/
-  claude-isolated          # Python script (uv run): build, start, stop, ls
-container/
-  start-zellij             # Entrypoint: launches zellij with an inline layout
-  start-claude             # Launches claude --dangerously-skip-permissions
-  zellij-config.kdl        # Zellij config (no startup tips, bash as default shell)
-home.example/              # Bootstrap template for ~/.config/claude-isolated/home
+pyproject.toml                     # Package definition (hatchling)
+src/claude_isolated/
+  cli.py                           # CLI entrypoint: build, start, stop, ls, init
+  data/
+    Containerfile                  # Debian trixie-slim image
+    container/
+      start-zellij                 # Entrypoint: launches zellij with an inline layout
+      start-claude                 # Launches claude --dangerously-skip-permissions
+      zellij-config.kdl            # Zellij config (no startup tips, bash as default shell)
+    home.example/                  # Bootstrap template for ~/.config/claude-isolated/home
 tests/
-  test-lifecycle.sh        # Automated build/start/verify/stop test
+  test-lifecycle.sh                # Automated build/start/verify/stop test
+```
+
+## Install
+
+```
+uv tool install git+https://github.com/fredrik/claude-isolated
 ```
 
 ## Config
@@ -31,7 +39,7 @@ Requires Podman running. Builds image, starts a container, verifies tools (pytho
 
 ## Conventions
 
-- Main script is Python, runnable via `uv run bin/claude-isolated`
+- Installable via `uv tool install` or `pipx install`
 - Container user is `claude` (`/home/claude/`)
 - Container names follow `claude-isolated-{random-name or hex}` pattern
 - Image tag is `claude-isolated:latest`

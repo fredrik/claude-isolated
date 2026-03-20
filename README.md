@@ -14,7 +14,7 @@ Each container gets its own workspace, while sharing an isolated set of Claude a
 Install:
 
 ```
-ln -s "$(pwd)/bin/claude-isolated" ~/.local/bin/claude-isolated
+uv tool install git+https://github.com/fredrik/claude-isolated
 ```
 
 Bootstrap your config:
@@ -74,17 +74,19 @@ If you don't have `credentials.json` yet, start a container without it. Claude C
 ## Structure
 
 ```
-Containerfile              # Debian bookworm-slim image
-bin/
-  claude-isolated          # Main script (uv run): build, start, stop, ls
-container/
-  start-zellij             # Entrypoint: launches zellij
-  start-claude             # Launches claude --dangerously-skip-permissions
-  zellij-config.kdl        # Zellij config (no startup tips, bash as default shell)
-  layout.kdl               # Zellij layout (claude pane + git diff pane)
-home.example/              # Bootstrap template for ~/.config/claude-isolated/home
+pyproject.toml                     # Package definition (hatchling)
+src/claude_isolated/
+  cli.py                           # CLI entrypoint: build, start, stop, ls, init
+  data/
+    Containerfile                  # Debian trixie-slim image
+    container/
+      start-zellij                 # Entrypoint: launches zellij
+      start-claude                 # Launches claude --dangerously-skip-permissions
+      zellij-config.kdl            # Zellij config (no startup tips, bash as default shell)
+      layout.kdl                   # Zellij layout (claude pane + git diff pane)
+    home.example/                  # Bootstrap template for ~/.config/claude-isolated/home
 tests/
-  test-lifecycle.sh        # Automated build/start/verify/stop test
+  test-lifecycle.sh                # Automated build/start/verify/stop test
 ```
 
 ## Config location

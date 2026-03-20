@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-CLI="$PROJECT_ROOT/bin/claude-isolated"
+CLI="uv run --project $PROJECT_ROOT claude-isolated"
 IMAGE="claude-isolated:latest"
 CONTAINER_NAME="claude-isolated-test-$$"
 TEST_DIR=""
@@ -24,7 +24,7 @@ TEST_DIR="$(mktemp -d /tmp/claude-isolated-test.XXXXX)"
 
 # Build
 echo "--- Building image ---"
-"$CLI" build
+$CLI build
 
 # Start a test container directly (the start subcommand runs interactively)
 echo "--- Starting test container ---"
@@ -47,10 +47,10 @@ timeout 10 podman exec "$CONTAINER_NAME" bash -c '[[ "$(pwd)" == "/workspace" ]]
 
 # Verify ls script shows the container
 echo "--- Verifying ls ---"
-"$CLI" ls | grep -q "$CONTAINER_NAME"
+$CLI ls | grep -q "$CONTAINER_NAME"
 
 # Stop
 echo "--- Stopping container ---"
-"$CLI" stop "$CONTAINER_NAME"
+$CLI stop "$CONTAINER_NAME"
 
 echo "All tests passed.""
