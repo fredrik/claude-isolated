@@ -84,6 +84,11 @@ cmd_run() {
     exit 1
   fi
 
+  # Ensure relative gitdir paths so worktrees survive container remounting.
+  # Run `git worktree repair` in existing repos to backfill this for older worktrees.
+  git -C "$root/.bare" config core.repositoryFormatVersion 1
+  git -C "$root/.bare" config extensions.relativeWorktrees true
+
   git -C "$root" worktree add "$worktree_path" -b "$branch" "$ref"
   echo "Created worktree '$name' at $worktree_path (branch: $branch)"
 
