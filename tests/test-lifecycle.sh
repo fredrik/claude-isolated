@@ -39,7 +39,7 @@ timeout 10 podman exec "$CONTAINER_NAME" python3 --version
 timeout 10 podman exec "$CONTAINER_NAME" uv --version
 timeout 10 podman exec "$CONTAINER_NAME" claude --version 2>&1 || echo "WARN: claude --version failed (may need auth)"
 timeout 10 podman exec "$CONTAINER_NAME" git --version
-timeout 10 podman exec "$CONTAINER_NAME" zellij --version
+
 
 # Verify working directory
 echo "--- Verifying workspace ---"

@@ -1,6 +1,6 @@
 # CLAUDE
 
-Run Claude Code in isolated Podman containers with Zellij sessions.
+Run Claude Code in isolated Podman containers.
 
 ## Structure
 
@@ -11,9 +11,7 @@ src/claude_isolated/
   data/
     Containerfile                  # Debian trixie-slim image
     container/
-      start-zellij                 # Entrypoint: launches zellij with an inline layout
-      start-claude                 # Launches claude --dangerously-skip-permissions
-      zellij-config.kdl            # Zellij config (no startup tips, bash as default shell)
+      start-claude                 # Entrypoint: launches claude --dangerously-skip-permissions
     home.example/                  # Bootstrap template for ~/.config/claude-isolated/home
 tests/
   test-lifecycle.sh                # Automated build/start/verify/stop test
@@ -44,4 +42,5 @@ Requires Podman running. Builds image, starts a container, verifies tools (pytho
 - Container names follow `claude-isolated-{random-name or hex}` pattern
 - Image tag is `claude-isolated:latest`
 - No nodejs/npm — Claude Code installed via `claude.ai/install.sh`
+- No zellij — Claude runs directly in the container
 - Requires git 2.48+ in the container (for relative worktree paths); installed from Debian sid

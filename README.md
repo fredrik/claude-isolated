@@ -59,9 +59,9 @@ Your normal CLAUDE.md and other Claude config is not included by default, nor ar
 
 Sessions are resumable since conversation history is stored in the shared config directory.
 
-Closing the main Claude Code instance (Ctrl-D twice, Ctrl-C twice, or `/exit`) will also close the zellij session and stop the container. New tabs opened within the session are plain bash panes and won't affect this behaviour.
+Closing Claude Code (Ctrl-D twice, Ctrl-C twice, or `/exit`) will stop the container.
 
-Closing the terminal tab, etc, should also close the session.
+Closing the terminal tab, etc, should also stop the container.
 
 Use `claude-isolated ls` to list your running sessions.
 

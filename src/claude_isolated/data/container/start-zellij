@@ -1,3 +1,0 @@
-#!/bin/bash
-exec zellij -n /home/claude/.config/zellij/layouts/layout.kdl \
-    ${CONTAINER_NAME:+--session "$CONTAINER_NAME"}
