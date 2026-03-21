@@ -20,7 +20,7 @@ cleanup() {
 trap cleanup EXIT
 
 # Setup
-TEST_DIR="$(mktemp -d /tmp/claude-isolated-test.XXXXX)"
+TEST_DIR="$(mktemp -d "$PROJECT_ROOT/.test-workspace.XXXXX")"
 
 # Build
 echo "--- Building image ---"
@@ -28,7 +28,7 @@ $CLI build
 
 # Start a test container directly (the start subcommand runs interactively)
 echo "--- Starting test container ---"
-podman run -d --rm --name "$CONTAINER_NAME" \
+podman run -d --name "$CONTAINER_NAME" \
     -v "$TEST_DIR:/workspace:rw" \
     "$IMAGE" sleep infinity
 echo "Container: $CONTAINER_NAME"
@@ -53,4 +53,4 @@ $CLI ls | grep -q "$CONTAINER_NAME"
 echo "--- Stopping container ---"
 $CLI stop "$CONTAINER_NAME"
 
-echo "All tests passed.""
+echo "All tests passed."
