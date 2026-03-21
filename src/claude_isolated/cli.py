@@ -157,7 +157,7 @@ def cmd_start(args: argparse.Namespace) -> None:
     run_args += ["-e", f"CONTAINER_NAME={name}"]
     if args.prompt:
         run_args += ["-e", f"CLAUDE_PROMPT={args.prompt}"]
-    run_args += [IMAGE, "start-zellij"]
+    run_args += [IMAGE, "start-claude"]
 
     signal.signal(signal.SIGHUP, lambda *_: sys.exit(1))
     signal.signal(signal.SIGTERM, lambda *_: sys.exit(1))
@@ -202,7 +202,6 @@ def main() -> None:
         prompt = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else ""
         with spinner("Building Containerfile.."):
             cmd_build(argparse.Namespace(), silent=True)
-        print(f'\r✔ Running Zellij..')
         print(f'\r✔ Running Claude Code in bypass permissions mode..')
         cmd_start(argparse.Namespace(prompt=prompt))
         return
