@@ -22,10 +22,5 @@
       "datasourceTemplate": "npm"
     }
   ],
-  "packageRules": [
-    {
-      "matchPackageNames": ["@anthropic-ai/claude-code"],
-      "schedule": ["before 9am on monday"]
-    }
-  ]
+  "packageRules": []
 }
