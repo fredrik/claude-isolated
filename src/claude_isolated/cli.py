@@ -147,6 +147,7 @@ def cmd_start(args: argparse.Namespace) -> None:
 
     run_args = [
         "podman", "run", "-it",
+        "--userns=keep-id",
         "--name", name,
         *[flag for src, dest, mode in volumes for flag in ("-v", f"{src}:{dest}:{mode}")],
     ]
