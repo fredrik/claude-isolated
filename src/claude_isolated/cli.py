@@ -152,6 +152,13 @@ def cmd_start(args: argparse.Namespace) -> None:
         *[flag for src, dest, mode in volumes for flag in ("-v", f"{src}:{dest}:{mode}")],
     ]
 
+    if args.podman:
+        run_args += [
+            "--device", "/dev/fuse",
+            "--security-opt", "label=disable",
+            "--security-opt", "unmask=ALL",
+        ]
+
     if wt.is_worktree:
         run_args += ["-w", workspace_mount]
 
@@ -200,11 +207,14 @@ SUBCOMMANDS = {"init", "build", "start", "stop", "ls"}
 def main() -> None:
     # If first arg isn't a subcommand, treat as default: build + start [prompt]
     if not sys.argv[1:] or sys.argv[1] not in SUBCOMMANDS:
-        prompt = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else ""
+        # Parse --podman flag from argv before treating rest as prompt
+        use_podman = "--podman" in sys.argv[1:]
+        remaining = [a for a in sys.argv[1:] if a != "--podman"]
+        prompt = " ".join(remaining)
         with spinner("Building Containerfile.."):
             cmd_build(argparse.Namespace(), silent=True)
         print(f'\r✔ Running Claude Code in bypass permissions mode..')
-        cmd_start(argparse.Namespace(prompt=prompt))
+        cmd_start(argparse.Namespace(prompt=prompt, podman=use_podman))
         return
 
     parser = argparse.ArgumentParser(description="Run Claude Code in isolated Podman containers")
@@ -215,6 +225,7 @@ def main() -> None:
     sub.add_parser("build", help="Build the container image")
 
     p_start = sub.add_parser("start", help="Start a new container")
+    p_start.add_argument("--podman", action="store_true", help="Enable nested Podman inside the container")
     p_start.add_argument("prompt", nargs="?", default="", help="Optional prompt for Claude")
 
     p_stop = sub.add_parser("stop", help="Stop and remove a container")
