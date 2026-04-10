@@ -35,6 +35,10 @@ Container config lives at `~/.config/claude-isolated/home/` (override with `CLAU
 
 Requires Podman running. Builds image, starts a container, verifies tools (python3, uv, claude, git, zellij), checks workspace, then stops and cleans up.
 
+## Changelog
+
+Update `CHANGELOG.md` when adding features, fixing bugs, or making other notable changes. Follow the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format.
+
 ## Conventions
 
 - Installable via `uv tool install` or `pipx install`
