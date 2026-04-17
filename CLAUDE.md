@@ -35,6 +35,18 @@ Container config lives at `~/.config/claude-isolated/home/` (override with `CLAU
 
 Requires Podman running. Builds image, starts a container, verifies tools (python3, uv, claude, git, zellij), checks workspace, then stops and cleans up.
 
+## Commits
+
+Use [Conventional Commits](https://www.conventionalcommits.org/): `type(scope): description`
+
+Allowed types: `feat`, `fix`, `docs`, `chore`, `refactor`, `test`, `ci`, `style`, `perf`, `build`
+
+Enforced by a commit-msg hook in `.githooks/`. After cloning, run:
+
+```
+git config core.hooksPath .githooks
+```
+
 ## Changelog
 
 Update `CHANGELOG.md` when adding features, fixing bugs, or making other notable changes. Follow the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format.
