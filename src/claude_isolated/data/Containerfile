@@ -24,12 +24,27 @@ RUN echo "deb http://deb.debian.org/debian sid main" \
     && apt-get install -y --no-install-recommends -t sid git \
     && rm -rf /var/lib/apt/lists/*
 
-# Create non-root user
+# Podman-in-Podman: nested rootless container support
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    podman \
+    fuse-overlayfs \
+    slirp4netns \
+    uidmap \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user with subordinate UID/GID ranges for nested podman
 RUN useradd -m -d /home/claude -s /bin/bash claude
+RUN echo "claude:100000:65536" >> /etc/subuid \
+    && echo "claude:100000:65536" >> /etc/subgid
 RUN mkdir -p /home/claude/.claude /workspace \
     && chown -R claude:claude /home/claude /workspace
 
 USER claude
+
+# Configure rootless podman storage (fuse-overlayfs inside container)
+RUN mkdir -p /home/claude/.config/containers \
+    && printf '[storage]\ndriver = "overlay"\n\n[storage.options.overlay]\nmount_program = "/usr/bin/fuse-overlayfs"\n' \
+    > /home/claude/.config/containers/storage.conf
 
 # Install uv
 ARG UV_VERSION=0.10.11
