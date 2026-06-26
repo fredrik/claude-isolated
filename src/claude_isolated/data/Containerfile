@@ -35,6 +35,9 @@ USER claude
 ARG UV_VERSION=0.10.11
 RUN curl -LsSf https://astral.sh/uv/${UV_VERSION}/install.sh | sh
 
+# Install mise
+RUN curl -fsSL https://mise.run | sh
+
 # Install Claude Code
 ARG CLAUDE_VERSION=2.1.77
 RUN curl -fsSL https://claude.ai/install.sh -o /tmp/install-claude.sh \
@@ -42,7 +45,7 @@ RUN curl -fsSL https://claude.ai/install.sh -o /tmp/install-claude.sh \
     && rm /tmp/install-claude.sh
 
 # uv and claude on PATH
-ENV PATH="/home/claude/bin:/home/claude/.local/bin:/home/claude/.claude/local/bin:$PATH"
+ENV PATH="/home/claude/bin:/home/claude/.local/bin:/home/claude/.claude/local/bin:/home/claude/.local/share/mise/shims:$PATH"
 
 # Use multiple colours(!)
 ENV TERM=xterm-256color
