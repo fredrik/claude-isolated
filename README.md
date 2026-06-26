@@ -1,6 +1,6 @@
 # claude-isolated
 
-Run Claude Code with `--dangerously-skip-permissions` in a Podman (or Docker) container.
+Run Claude Code with `--dangerously-skip-permissions` in a Podman or Docker container.
 
 Claude is isolated from your host system: only the code you're working on (and Claude's config) is available inside the container.
 
