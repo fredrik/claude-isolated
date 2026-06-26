@@ -1,6 +1,6 @@
 # claude-isolated
 
-Run Claude Code with `--dangerously-skip-permissions` in a Podman container.
+Run Claude Code with `--dangerously-skip-permissions` in a Podman or Docker container.
 
 Claude is isolated from your host system: only the code you're working on (and Claude's config) is available inside the container.
 
@@ -12,23 +12,27 @@ Sandboxed `claude` sessions in a Debian container with Python, uv, git, and Clau
 
 ## Prerequisites
 
-- [Podman](https://podman.io/)
+- [Podman](https://podman.io/) or [Docker](https://www.docker.com/)
 - [uv](https://docs.astral.sh/uv/)
+
+## Container runtime
+
+`claude-isolated` auto-detects the container runtime, preferring Podman over
+Docker when both are installed.
 
 ## How to use claude-isolated
 
 Install:
 
-```
+```sh
 uv tool install git+https://github.com/fredrik/claude-isolated
 ```
 
 This command installs a single `claude-isolated` Python script to `~/.local/bin` (uv's default).
 
-
 Bootstrap your config:
 
-```
+```sh
 claude-isolated init
 ```
 
@@ -36,14 +40,14 @@ claude-isolated init
 
 Start a container from your project directory:
 
-```
+```sh
 cd ~/code/my-project
 claude-isolated
 ```
 
 You can also pass a prompt directly:
 
-```
+```sh
 claude-isolated "fix the failing tests"
 ```
 
@@ -67,15 +71,12 @@ Use `claude-isolated ls` to list your running sessions.
 
 Use `claude-isolated stop` to stop / remove a running session.
 
-
 ## Development process
 
 Nearly all of this repo was written by Claude Code inside a sandboxed "yolo" environment.
 
 README.md was written by a human. Promise!
 
-
 ## Feedback
 
 Please open an issue or PR if you have trouble or if there's something you wish to improve!
-
