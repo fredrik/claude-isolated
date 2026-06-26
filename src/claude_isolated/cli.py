@@ -218,6 +218,8 @@ def main() -> None:
         with spinner("Building Containerfile.."):
             cmd_build(argparse.Namespace(), silent=True)
         print(f'\r✔ Running Claude Code in bypass permissions mode..')
+        print(f'\r✔ Using {RUNTIME} runtime')
+        print()
         cmd_start(argparse.Namespace(prompt=prompt))
         return
 
