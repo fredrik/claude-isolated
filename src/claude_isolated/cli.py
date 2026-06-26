@@ -1,4 +1,4 @@
-"""Run Claude Code in isolated Podman containers."""
+"""Run Claude Code in isolated containers (Podman or Docker)."""
 
 import argparse
 import contextlib
@@ -13,6 +13,17 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent / "data"
 IMAGE = "claude-isolated:latest"
+
+
+def runtime() -> str:
+    for cmd in ("podman", "docker"):
+        if shutil.which(cmd):
+            return cmd
+    print("Neither podman nor docker found in PATH", file=sys.stderr)
+    sys.exit(1)
+
+
+RUNTIME = runtime()
 
 
 def generate_name() -> str:
@@ -111,7 +122,8 @@ def cmd_init(args: argparse.Namespace) -> None:
 
 def cmd_build(args: argparse.Namespace, silent: bool = False) -> None:
     kwargs = {"stdout": subprocess.DEVNULL, "stderr": subprocess.DEVNULL} if silent else {}
-    subprocess.run(["podman", "build", "-t", IMAGE, str(PROJECT_ROOT)], check=True, **kwargs)
+    containerfile = str(PROJECT_ROOT / "Containerfile")
+    subprocess.run([RUNTIME, "build", "-f", containerfile, "-t", IMAGE, str(PROJECT_ROOT)], check=True, **kwargs)
     if not silent:
         print(f"Image built: {IMAGE}")
 
@@ -146,8 +158,10 @@ def cmd_start(args: argparse.Namespace) -> None:
     # TODO: consider re-adding per-file required checks
 
     run_args = [
-        "podman", "run", "-it",
-        "--userns=keep-id",
+        RUNTIME, "run", "-it",
+        # keep-id maps the host user into the container so mounted volumes stay
+        # writable. It is Podman-specific; Docker maps ownership differently.
+        *(["--userns=keep-id"] if RUNTIME == "podman" else []),
         "--name", name,
         *[flag for src, dest, mode in volumes for flag in ("-v", f"{src}:{dest}:{mode}")],
     ]
@@ -167,19 +181,19 @@ def cmd_start(args: argparse.Namespace) -> None:
         subprocess.run(run_args)
     finally:
         # Ensure the container gets stopped and removed on exit (including on Ctrl+C or SIGHUP, which happens when closing a terminal tab for example).
-        subprocess.run(["podman", "stop", "-t", "10", name],
+        subprocess.run([RUNTIME, "stop", "-t", "10", name],
                         capture_output=True)
-        subprocess.run(["podman", "rm", name],
+        subprocess.run([RUNTIME, "rm", name],
                         capture_output=True)
 
 
 
 def cmd_stop(args: argparse.Namespace) -> None:
-    stop = subprocess.run(["podman", "stop", "-t", "2", args.name], capture_output=True)
+    stop = subprocess.run([RUNTIME, "stop", "-t", "2", args.name], capture_output=True)
     if stop.returncode != 0:
         print(f"Failed to stop container: {args.name}", file=sys.stderr)
         sys.exit(1)
-    rm = subprocess.run(["podman", "rm", args.name], capture_output=True)
+    rm = subprocess.run([RUNTIME, "rm", args.name], capture_output=True)
     if rm.returncode != 0:
         print(f"Stopped but failed to remove container: {args.name}", file=sys.stderr)
         sys.exit(1)
@@ -188,7 +202,7 @@ def cmd_stop(args: argparse.Namespace) -> None:
 
 def cmd_ls(args: argparse.Namespace) -> None:
     subprocess.run([
-        "podman", "ps",
+        RUNTIME, "ps",
         "--filter", f"ancestor={IMAGE}",
         "--format", "table {{.Names}}\t{{.Status}}\t{{.Created}}",
     ], check=True)
@@ -207,7 +221,7 @@ def main() -> None:
         cmd_start(argparse.Namespace(prompt=prompt))
         return
 
-    parser = argparse.ArgumentParser(description="Run Claude Code in isolated Podman containers")
+    parser = argparse.ArgumentParser(description="Run Claude Code in isolated containers")
     sub = parser.add_subparsers(dest="command")
 
     sub.add_parser("init", help="Create config directory from template")
