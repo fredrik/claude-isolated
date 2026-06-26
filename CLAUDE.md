@@ -33,7 +33,7 @@ Container config lives at `~/.config/claude-isolated/home/` (override with `CLAU
 ./tests/test-lifecycle.sh
 ```
 
-Requires Podman running. Builds image, starts a container, verifies tools (python3, uv, claude, git, zellij), checks workspace, then stops and cleans up.
+Requires Podman or Docker. Builds image, starts a container, verifies tools (python3, uv, claude, git, zellij), checks workspace, then stops and cleans up.
 
 ## Commits
 
@@ -59,4 +59,5 @@ Update `CHANGELOG.md` when adding features, fixing bugs, or making other notable
 - Image tag is `claude-isolated:latest`
 - No nodejs/npm — Claude Code installed via `claude.ai/install.sh`
 - No zellij — Claude runs directly in the container
+- Supports both Podman and Docker (auto-detected, prefers Podman)
 - Requires git 2.48+ in the container (for relative worktree paths); installed from Debian sid
