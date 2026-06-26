@@ -20,27 +20,19 @@ Sandboxed `claude` sessions in a Debian container with Python, uv, git, and Clau
 `claude-isolated` auto-detects the container runtime, preferring Podman over
 Docker when both are installed.
 
-Podman is recommended: it runs rootless by default, and `claude-isolated`
-passes `--userns=keep-id` so your host user is mapped into the container and
-mounted volumes stay writable. That flag is Podman-specific and is skipped when
-running under Docker. With Docker, mounted-volume ownership depends on your
-daemon configuration (e.g. rootless mode or userns-remap), so if Claude can't
-write to `/home/claude` or `/workspace`, that's the thing to check.
-
 ## How to use claude-isolated
 
 Install:
 
-```
+```sh
 uv tool install git+https://github.com/fredrik/claude-isolated
 ```
 
 This command installs a single `claude-isolated` Python script to `~/.local/bin` (uv's default).
 
-
 Bootstrap your config:
 
-```
+```sh
 claude-isolated init
 ```
 
@@ -48,14 +40,14 @@ claude-isolated init
 
 Start a container from your project directory:
 
-```
+```sh
 cd ~/code/my-project
 claude-isolated
 ```
 
 You can also pass a prompt directly:
 
-```
+```sh
 claude-isolated "fix the failing tests"
 ```
 
@@ -79,15 +71,12 @@ Use `claude-isolated ls` to list your running sessions.
 
 Use `claude-isolated stop` to stop / remove a running session.
 
-
 ## Development process
 
 Nearly all of this repo was written by Claude Code inside a sandboxed "yolo" environment.
 
 README.md was written by a human. Promise!
 
-
 ## Feedback
 
 Please open an issue or PR if you have trouble or if there's something you wish to improve!
-
